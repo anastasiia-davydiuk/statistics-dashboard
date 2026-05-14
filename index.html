@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Статистика проектів - Повний дашборд (12 тижнів)</title>
+    <title>Статистика проектів - Дашборд (13 тижнів)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -171,6 +171,27 @@
             background: rgba(255,255,255,0.3);
         }
 
+        .success-card {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .success-card .kpi-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .success-card .kpi-value {
+            color: white;
+        }
+
+        .success-card .kpi-change {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .success-card::before {
+            background: rgba(255,255,255,0.3);
+        }
+
         .warning-card {
             background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
             color: white;
@@ -317,8 +338,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Статистика проектів - Повний звіт (12 тижнів)</h1>
-            <p>Аналітика за період: 12.02 - 06.05.2025 (84 дні)</p>
+            <h1>📊 Статистика проектів - Повний звіт (13 тижнів)</h1>
+            <p>Аналітика за період: 12.02 - 13.05.2025 (91 день)</p>
         </div>
 
         <div class="project-selector">
@@ -335,44 +356,44 @@
             <div class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-label">Нові користувачі (тиждень)</div>
-                    <div class="kpi-value">20</div>
-                    <div class="kpi-change positive">
-                        ↑ +100% від попереднього
+                    <div class="kpi-value">7</div>
+                    <div class="kpi-change negative">
+                        ↓ -65% від попереднього
                     </div>
                 </div>
-                <div class="kpi-card warning-card">
-                    <div class="kpi-label">⚠️ Активні користувачі</div>
-                    <div class="kpi-value">700</div>
+                <div class="kpi-card success-card">
+                    <div class="kpi-label">✅ Активні користувачі</div>
+                    <div class="kpi-value">840</div>
                     <div class="kpi-change">
-                        ↓ -37.2% за тиждень (критичне падіння)
+                        ↑ +20% за тиждень (відновлення!)
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Резюме (всього)</div>
                     <div class="kpi-value">97</div>
-                    <div class="kpi-change positive">
-                        ↑ +185% за весь період (34→97)
+                    <div class="kpi-change neutral">
+                        0 нових за тиждень (+185% за період)
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Нові оголошення (тиждень)</div>
                     <div class="kpi-value">2</div>
-                    <div class="kpi-change negative">
-                        ↓ Найменше за період
+                    <div class="kpi-change neutral">
+                        1 техніка, 1 вакансія
                     </div>
                 </div>
                 <div class="kpi-card revenue-card">
                     <div class="kpi-label">💰 Всього доходу</div>
-                    <div class="kpi-value">61 700₴</div>
+                    <div class="kpi-value">64 700₴</div>
                     <div class="kpi-change">
-                        За весь період (12 тижнів)
+                        За весь період (13 тижнів)
                     </div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">📧 Розсилок надіслано</div>
-                    <div class="kpi-value">5 262</div>
-                    <div class="kpi-change neutral">
-                        6 кампаній (середній CTR: 2.6%)
+                    <div class="kpi-label">Дохід (тиждень)</div>
+                    <div class="kpi-value">3 000₴</div>
+                    <div class="kpi-change positive">
+                        ↑ +329% від попереднього
                     </div>
                 </div>
             </div>
@@ -414,7 +435,7 @@
                 </div>
 
                 <div class="chart-card full-width-chart">
-                    <div class="chart-title">📧 Ефективність розсилок - Всі 6 кампаній</div>
+                    <div class="chart-title">📧 Ефективність розсилок - Всі 7 кампаній</div>
                     <table class="email-campaigns-table">
                         <thead>
                             <tr>
@@ -482,21 +503,30 @@
                                 <td class="metric-bad">1.37%</td>
                                 <td class="metric-bad">0.46%</td>
                             </tr>
+                            <tr>
+                                <td><strong>07.05</strong></td>
+                                <td>885</td>
+                                <td>17</td>
+                                <td>13</td>
+                                <td>7</td>
+                                <td class="metric-bad">1.47%</td>
+                                <td class="metric-bad">0.79%</td>
+                            </tr>
                             <tr style="background: #f0fff4; font-weight: bold;">
                                 <td><strong>Середнє</strong></td>
-                                <td>877</td>
-                                <td>26</td>
-                                <td>22</td>
+                                <td>878</td>
+                                <td>25</td>
+                                <td>20</td>
                                 <td>5</td>
-                                <td class="metric-good">2.54%</td>
-                                <td class="metric-bad">0.54%</td>
+                                <td class="metric-bad">2.34%</td>
+                                <td class="metric-bad">0.57%</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="chart-card full-width-chart">
-                    <div class="chart-title">🔗 Linktree - Повна динаміка (з новим курсом ЛАБА)</div>
+                    <div class="chart-title">🔗 Linktree - Повна динаміка</div>
                     <div class="chart-container">
                         <canvas id="linktree-chart"></canvas>
                     </div>
@@ -504,31 +534,28 @@
             </div>
 
             <div class="insights-panel">
-                <div class="insight-title">💡 Ключові інсайти - Тракмаркет (12 тижнів)</div>
+                <div class="insight-title">💡 Ключові інсайти - Тракмаркет (13 тижнів)</div>
                 <div class="insight-list">
-                    <div class="insight-item critical">
-                        <strong>🚨 КРИТИЧНА СИТУАЦІЯ:</strong> Активні користувачі впали до 700 (-63% від піку 1900). Це найгірший показник за весь період спостереження!
+                    <div class="insight-item success">
+                        <strong>🎉 ВІДНОВЛЕННЯ ПОЧАЛОСЬ:</strong> Активні користувачі виросли з 700 до 840 (+20%!). Перший тиждень зростання після 5 тижнів падіння!
+                    </div>
+                    <div class="insight-item success">
+                        <strong>💰 Дохід відновився:</strong> 3,000₴ за тиждень (+329% до попереднього). Всього зібрано 64,700₴ за 13 тижнів.
                     </div>
                     <div class="insight-item warning">
-                        <strong>⚠️ Тривале падіння:</strong> 5 тижнів поспіль негативна динаміка: 1900→1000(-47%)→1300→777→1100→1100→700(-37%). Потрібні термінові дії!
-                    </div>
-                    <div class="insight-item success">
-                        <strong>💰 Монетизація тримається:</strong> 61,700₴ за 12 тижнів. Середній тижневий дохід: 5,142₴. Масло дало 40,800₴ за 1 тиждень (рекорд).
-                    </div>
-                    <div class="insight-item success">
-                        <strong>📈 Резюме - єдина стабільність:</strong> З 34 до 97 (+185%). Навіть під час обвалу трафіку зростають (+4-8/тиждень). Це показник якості аудиторії.
+                        <strong>⚠️ Довга криза позаду?</strong> Після обвалу з 1900 до 700 (-63%), бачимо перше відновлення. Це може бути початок позитивного тренду.
                     </div>
                     <div class="insight-item">
-                        <strong>📧 Розсилки втрачають ефективність:</strong> Остання розсилка (20.04) показала тільки 1.37% CTR. Можлива втома аудиторії або погіршення якості контенту.
+                        <strong>📈 Резюме стабілізувались:</strong> 97 резюме (+185% за період), але 0 нових за останній тиждень. Можлива пауза або насичення.
                     </div>
                     <div class="insight-item success">
-                        <strong>🎓 Курс ЛАБА працює:</strong> З'явився новий канал у Linktree - 165 кліків за 2 тижні. Це показує диверсифікацію доходів.
+                        <strong>🔗 Linktree постійно зростає:</strong> Сайт: 874 (+7%), Масла: 181 (+3%), Резюме: 132 (+6%), YouTube: 126 (+2%). Курс ЛАБА досяг 165 кліків.
                     </div>
                     <div class="insight-item warning">
-                        <strong>📉 Оголошення майже зупинились:</strong> Останній тиждень - тільки 2 оголошення (найменше за період). Це сигнал про проблеми з активністю.
+                        <strong>📉 Оголошення критично мало:</strong> Тільки 2 за тиждень (як і попереднього тижня). Це найнижчі показники за весь період.
                     </div>
-                    <div class="insight-item critical">
-                        <strong>🔴 Терміново потрібно:</strong> Проаналізувати причини падіння після 25.03 та розробити план відновлення. Можливі причини: сезонність, свята, зміни в Google/Facebook алгоритмах, технічні проблеми.
+                    <div class="insight-item">
+                        <strong>🎯 Прогноз:</strong> Якщо тренд відновлення продовжиться, можемо повернутись до 1000+ користувачів за 2-3 тижні. Потрібно підтримати імпульс.
                     </div>
                 </div>
             </div>
@@ -537,46 +564,46 @@
         <!-- FINKAR Dashboard -->
         <div id="finkar-dashboard" class="dashboard-content" style="display: none;">
             <div class="kpi-grid">
-                <div class="kpi-card warning-card">
-                    <div class="kpi-label">⚠️ Ліди з реклами (тиждень)</div>
-                    <div class="kpi-value">2</div>
-                    <div class="kpi-change">
-                        ↓ -94% від попереднього (ОБВАЛ!)
+                <div class="kpi-card">
+                    <div class="kpi-label">Всього лідів (тиждень)</div>
+                    <div class="kpi-value">19</div>
+                    <div class="kpi-change neutral">
+                        З різних джерел
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Ліди з сайту (тиждень)</div>
-                    <div class="kpi-value">3</div>
-                    <div class="kpi-change positive">
-                        ↑ +50% від попереднього
+                    <div class="kpi-value">1</div>
+                    <div class="kpi-change negative">
+                        ↓ -67% від попереднього
                     </div>
                 </div>
-                <div class="kpi-card warning-card">
-                    <div class="kpi-label">⚠️ Активні користувачі</div>
-                    <div class="kpi-value">222</div>
+                <div class="kpi-card success-card">
+                    <div class="kpi-label">✅ Активні користувачі</div>
+                    <div class="kpi-value">243</div>
                     <div class="kpi-change">
-                        ↓ -64% від піку (КАТАСТРОФА!)
+                        ↑ +9.5% за тиждень (відновлення!)
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Всього лідів за період</div>
-                    <div class="kpi-value">568</div>
+                    <div class="kpi-value">587</div>
                     <div class="kpi-change neutral">
-                        539 реклама + 29 сайт
+                        557 реклама + 30 сайт
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Середньо лідів/тиждень</div>
-                    <div class="kpi-value">47.3</div>
-                    <div class="kpi-change negative">
-                        ↓ Падіння на 16% vs перша половина
+                    <div class="kpi-value">45.2</div>
+                    <div class="kpi-change neutral">
+                        Реклама: 42.8 | Сайт: 2.3
                     </div>
                 </div>
                 <div class="kpi-card revenue-card">
                     <div class="kpi-label">📧 Дайджест CTR</div>
                     <div class="kpi-value">26%</div>
                     <div class="kpi-change">
-                        Єдиний яскравий показник!
+                        Exceptional результат!
                     </div>
                 </div>
             </div>
@@ -633,31 +660,31 @@
             </div>
 
             <div class="insights-panel">
-                <div class="insight-title">💡 Ключові інсайти - Фінкар (12 тижнів)</div>
+                <div class="insight-title">💡 Ключові інсайти - Фінкар (13 тижнів)</div>
                 <div class="insight-list">
-                    <div class="insight-item critical">
-                        <strong>🚨 КАТАСТРОФА:</strong> Останній тиждень - тільки 2 ліди з реклами (-94%). Аудиторія впала до 222 (-64% від піку). Це системна криза!
+                    <div class="insight-item success">
+                        <strong>🎉 ВІДНОВЛЕННЯ РЕКЛАМИ:</strong> З катастрофічних 2 лідів до 18 (+800%!). Це показує, що реклама знову працює!
                     </div>
-                    <div class="insight-item critical">
-                        <strong>📉 Обвал на всіх фронтах:</strong> Користувачі: 624→388→324→222. Ліди: 80→20→34→2. Синхронне падіння з Тракмаркет.
+                    <div class="insight-item success">
+                        <strong>📈 Аудиторія відновлюється:</strong> З мінімуму 222 до 243 (+9.5%). Синхронно з відновленням Тракмаркет. Спільна причина вирішена?
                     </div>
                     <div class="insight-item warning">
-                        <strong>⚠️ Залежність від реклами смертельна:</strong> 95% лідів з платних джерел. При обвалі реклами (2 ліди) весь бізнес під загрозою.
+                        <strong>⚠️ Все ще далеко від піку:</strong> Піковий тиждень був 624 користувачі. Зараз 243 (-61%). Довга дорога до відновлення попіду.
+                    </div>
+                    <div class="insight-item critical">
+                        <strong>📉 Дві половини періоду:</strong> Перші 6 тижнів: ~59 лідів/тиждень. Другі 7 тижнів: ~34 ліда/тиждень (-42%). Структурна зміна.
+                    </div>
+                    <div class="insight-item warning">
+                        <strong>🌐 Залежність від реклами критична:</strong> 94.9% лідів з платних джерел. Органіка майже не працює (1-6 лідів/тиждень).
+                    </div>
+                    <div class="insight-item success">
+                        <strong>📧 Email - єдиний яскравий показник:</strong> Дайджест з 26% CTR показує, що контент працює. Потрібно масштабувати цей канал!
                     </div>
                     <div class="insight-item">
-                        <strong>📊 Дві половини періоду:</strong> Перші 6 тижнів: ~59 лідів/тиждень. Другі 6 тижнів: ~35 лідів/тиждень (-41%).
+                        <strong>🔮 Прогноз:</strong> Якщо реклама повернеться до 40-50 лідів/тиждень, і аудиторія до 350-400, це буде хороший результат. Потрібно 3-4 тижні стабільного зростання.
                     </div>
-                    <div class="insight-item success">
-                        <strong>🌐 Сайт не рятує, але стабільний:</strong> 2-6 лідів з сайту протягом всього періоду. Органіка працює на мінімумі, але працює.
-                    </div>
-                    <div class="insight-item success">
-                        <strong>📧 Email-маркетинг - єдина надія:</strong> Дайджест показав 26% CTR. Це exceptional! Потрібно масштабувати цей канал терміново.
-                    </div>
-                    <div class="insight-item critical">
-                        <strong>🔴 Спільна проблема з Тракмаркет:</strong> Обидва проекти обвалились після 25.03. Це не випадковість - спільна причина: свята (Великдень), зміни в рекламі, або макроекономіка.
-                    </div>
-                    <div class="insight-item warning">
-                        <strong>💡 Терміновий план:</strong> 1) Діагностика рекламних кампаній 2) Масштабування email 3) Робота над органікою 4) Диверсифікація джерел лідів 5) Аналіз конкурентів.
+                    <div class="insight-item">
+                        <strong>💡 Синхронність з Тракмаркет:</strong> Обидва проекти обвалились після 25.03 і обидва почали відновлення після 06.05. Це підтверджує спільну зовнішню причину (свята, сезонність).
                     </div>
                 </div>
             </div>
@@ -665,24 +692,24 @@
     </div>
 
     <script>
-        const weeks = ['12.02', '19.02', '26.02', '05.03', '12.03', '19.03', '26.03', '02.04', '09.04', '16.04', '23.04', '30.04'];
+        const weeks = ['12.02', '19.02', '26.02', '05.03', '12.03', '19.03', '26.03', '02.04', '09.04', '16.04', '23.04', '30.04', '07.05'];
 
         // TRAKMARKET Data
         const trakmarketData = {
-            newUsers: [8, 12, 9, 27, 30, 54, 18, 20, 12, 18, 10, 20],
-            activeUsers: [952, 976, 713, 1400, 1500, 1900, 1000, 1300, 777, 1100, 1100, 700],
-            ads: [4, 98, 3, 11, 29, 10, 4, 29, 4, 7, 6, 2],
-            resumes: [34, 37, 37, 45, 52, 70, 74, 79, 83, 87, 91, 97],
-            revenueAds: [0, 0, 0, 0, 8800, 3200, 2100, 3700, 800, 2500, 1500, 700],
-            revenueOil: [0, 0, 0, 0, 0, 40800, 0, 1600, 0, 0, 0, 0]
+            newUsers: [8, 12, 9, 27, 30, 54, 18, 20, 12, 18, 10, 20, 7],
+            activeUsers: [952, 976, 713, 1400, 1500, 1900, 1000, 1300, 777, 1100, 1100, 700, 840],
+            ads: [4, 98, 3, 11, 29, 10, 4, 29, 4, 7, 6, 2, 2],
+            resumes: [34, 37, 37, 45, 52, 70, 74, 79, 83, 87, 91, 97, 97],
+            revenueAds: [0, 0, 0, 0, 8800, 3200, 2100, 3700, 800, 2500, 1500, 700, 3000],
+            revenueOil: [0, 0, 0, 0, 0, 40800, 0, 1600, 0, 0, 0, 0, 0]
         };
 
         // FINKAR Data
         const finkarData = {
-            adsLeads: [55, 67, 53, 51, 62, 80, 42, 41, 55, 20, 34, 2],
-            siteLeads: [3, 4, 3, 4, 3, 4, 2, 6, 3, 2, 3, 3],
-            activeUsers: [589, 581, 497, 506, 624, 614, 524, 534, 408, 388, 324, 222],
-            newUsers: [496, 482, 408, 417, 542, 525, 447, 451, 338, 306, 249, 178]
+            adsLeads: [55, 67, 53, 51, 62, 80, 42, 41, 55, 20, 34, 2, 18],
+            siteLeads: [3, 4, 3, 4, 3, 4, 2, 6, 3, 2, 3, 3, 1],
+            activeUsers: [589, 581, 497, 506, 624, 614, 524, 534, 408, 388, 324, 222, 243],
+            newUsers: [496, 482, 408, 417, 542, 525, 447, 451, 338, 306, 249, 178, 183]
         };
 
         const chartOptions = {
@@ -811,11 +838,11 @@
         new Chart(document.getElementById('linktree-chart'), {
             type: 'line',
             data: {
-                labels: ['Тиждень 5', 'Тиждень 6', 'Тиждень 9', 'Тиждень 10', 'Тиждень 11', 'Тиждень 12'],
+                labels: ['Тиждень 5', 'Тиждень 6', 'Тиждень 9', 'Тиждень 10', 'Тиждень 11', 'Тиждень 12', 'Тиждень 13'],
                 datasets: [
                     {
                         label: 'Сайт',
-                        data: [332, 397, 605, 734, 780, 814],
+                        data: [332, 397, 605, 734, 780, 814, 874],
                         borderColor: '#4299e1',
                         backgroundColor: 'rgba(66, 153, 225, 0.1)',
                         tension: 0.4,
@@ -823,7 +850,7 @@
                     },
                     {
                         label: 'Масла',
-                        data: [101, 117, 157, 164, 172, 175],
+                        data: [101, 117, 157, 164, 172, 175, 181],
                         borderColor: '#ed8936',
                         backgroundColor: 'rgba(237, 137, 54, 0.1)',
                         tension: 0.4,
@@ -831,7 +858,7 @@
                     },
                     {
                         label: 'Резюме водія',
-                        data: [61, 74, 100, 112, 118, 125],
+                        data: [61, 74, 100, 112, 118, 125, 132],
                         borderColor: '#48bb78',
                         backgroundColor: 'rgba(72, 187, 120, 0.1)',
                         tension: 0.4,
@@ -839,7 +866,7 @@
                     },
                     {
                         label: 'YouTube',
-                        data: [65, 86, 102, 116, 123, 123],
+                        data: [65, 86, 102, 116, 123, 123, 126],
                         borderColor: '#f56565',
                         backgroundColor: 'rgba(245, 101, 101, 0.1)',
                         tension: 0.4,
@@ -847,7 +874,7 @@
                     },
                     {
                         label: 'Курс ЛАБА',
-                        data: [null, null, null, 105, 165, null],
+                        data: [null, null, null, 105, 165, null, null],
                         borderColor: '#9f7aea',
                         backgroundColor: 'rgba(159, 122, 234, 0.1)',
                         tension: 0.4,
@@ -933,7 +960,7 @@
             data: {
                 labels: ['Реклама (94.9%)', 'Сайт (5.1%)'],
                 datasets: [{
-                    data: [539, 29],
+                    data: [557, 30],
                     backgroundColor: ['#48bb78', '#4299e1']
                 }]
             },
@@ -993,7 +1020,7 @@
                 datasets: [
                     {
                         label: 'Всього лідів',
-                        data: [58, 71, 56, 55, 65, 84, 44, 47, 58, 22, 37, 5],
+                        data: [58, 71, 56, 55, 65, 84, 44, 47, 58, 22, 37, 5, 19],
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         tension: 0.4,
