@@ -98,7 +98,9 @@
 
   /* ---------- форма адмінки ---------- */
   .fgroup{margin-bottom:22px}
+  .fgroup:last-child{margin-bottom:0}
   .fgroup h3{font-size:1.05em;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #edf2f7;color:#4a5568}
+  .save-bar{position:sticky;bottom:14px;z-index:6;box-shadow:0 -4px 24px rgba(0,0,0,.18);padding:16px 24px}
   .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
   label{display:block;font-size:.84em;color:#718096;font-weight:600;margin-bottom:5px}
   input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 13px;border:2px solid #e2e8f0;border-radius:10px;
@@ -147,78 +149,125 @@
 
   <!-- ============ АДМІНКА ============ -->
   <div class="panel" id="adm">
+
+    <div class="sec"><h2>📅 Період</h2><p>За який тиждень вносиш дані</p></div>
     <div class="card">
-      <h2>⚙️ Внести дані за тиждень</h2>
-      <p class="sub">Заповни поля — відсотки зміни дашборд порахує сам, порівнявши з попереднім тижнем</p>
-
-      <div class="hint">
-        Назви каналів у Лінктрі та банері підтягуються з попереднього тижня — просто впиши нові числа.
-        Якщо канал з'явився або зник, додай або видали рядок.
+      <div class="fields">
+        <div><label>Дата з</label><input type="date" id="f_from"></div>
+        <div><label>Дата по</label><input type="date" id="f_to"></div>
       </div>
+      <div class="hint" style="margin:16px 0 0">
+        Дати підставляються самі — наступний тиждень після останнього збереженого.
+        Відсотки зростання й падіння дашборд рахує сам, вписувати їх не треба.
+      </div>
+    </div>
 
+    <div class="sec"><h2>🚚 Тракмаркет</h2><p>Все, що стосується сайту вантажівок і роботи водіїв</p></div>
+
+    <div class="card">
       <div class="fgroup">
-        <h3>📅 Період</h3>
+        <h3>📊 Аналітика сайту</h3>
+        <p class="sub" style="margin:-6px 0 12px">Цифри з системи аналітики — саме до них рахуються стрілки ↑↓</p>
         <div class="fields">
-          <div><label>Дата з</label><input type="date" id="f_from"></div>
-          <div><label>Дата по</label><input type="date" id="f_to"></div>
+          <div><label>Активні користувачі</label><input type="number" id="f_tm_active" placeholder="939"></div>
+          <div><label>Нові користувачі</label><input type="number" id="f_tm_newVisitors" placeholder="756"></div>
         </div>
       </div>
 
       <div class="fgroup">
-        <h3>🚚 Тракмаркет — основні показники</h3>
+        <h3>💵 Дії на сайті та дохід</h3>
+        <p class="sub" style="margin:-6px 0 12px">Те, що люди реально зробили за тиждень</p>
         <div class="fields">
-          <div><label>Нові користувачі на сайті (реєстрації)</label><input type="number" id="f_tm_newUsers" placeholder="9"></div>
+          <div><label>Реєстрації на сайті</label><input type="number" id="f_tm_newUsers" placeholder="9"></div>
           <div><label>Нові оголошення</label><input type="number" id="f_tm_newAds" placeholder="9"></div>
-          <div><label>Сума оплат, ₴</label><input type="number" id="f_tm_payments" placeholder="5800"></div>
-          <div><label>Активні користувачі (аналітика)</label><input type="number" id="f_tm_active" placeholder="939"></div>
-          <div><label>Нові користувачі (аналітика)</label><input type="number" id="f_tm_newVisitors" placeholder="756"></div>
-          <div><label>Користувачів у групі</label><input type="number" id="f_tm_group" placeholder="4316"></div>
-          <div><label>Резюме водіїв</label><input type="number" id="f_tm_resumes" placeholder="123"></div>
+          <div><label>Загальна сума оплат, ₴</label><input type="number" id="f_tm_payments" placeholder="5800"></div>
         </div>
       </div>
 
       <div class="fgroup">
+        <h3>👥 Спільнота</h3>
+        <p class="sub" style="margin:-6px 0 12px">Накопичені показники, не за тиждень</p>
+        <div class="fields">
+          <div><label>Резюме водіїв за тиждень</label><input type="number" id="f_tm_resumes" placeholder="123"></div>
+          <div><label>Користувачів у групі, всього</label><input type="number" id="f_tm_group" placeholder="4316"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fgroup" style="margin-bottom:8px">
         <h3>💰 Дохід за джерелами <span style="font-weight:400;color:#a0aec0;font-size:.85em">— необов'язково</span></h3>
+        <p class="sub" style="margin:-6px 0 12px">Оголошення різних типів коштують по-різному, тому загальна сума мало що каже</p>
         <div id="revenueRows"></div>
         <button class="btn sm ghost" onclick="addRow('revenueRows')">+ Додати джерело</button>
-        <div class="hint" style="margin:12px 0 0">Сума по джерелах має збігатися із загальною сумою оплат вище. Якщо якогось джерела цього тижня не було — став 0 або видали рядок.</div>
+        <div class="hint" style="margin:12px 0 0">Сума по джерелах має збігатися із загальною сумою оплат вище. Якщо джерела цього тижня не було — постав 0 або видали рядок.</div>
       </div>
+    </div>
 
-      <div class="fgroup">
+    <div class="card">
+      <div class="fgroup" style="margin-bottom:8px">
         <h3>📋 Оголошення за типом <span style="font-weight:400;color:#a0aec0;font-size:.85em">— необов'язково</span></h3>
+        <p class="sub" style="margin:-6px 0 12px">Скільки з поданих оголошень були вакансіями, а скільки технікою</p>
         <div id="adsRows"></div>
         <button class="btn sm ghost" onclick="addRow('adsRows')">+ Додати тип</button>
       </div>
+    </div>
 
-      <div class="fgroup">
-        <h3>🔗 Посилання Лінктрі</h3>
+    <div class="card">
+      <div class="fgroup" style="margin-bottom:8px">
+        <h3>🔗 Переходи з Лінктрі</h3>
+        <p class="sub" style="margin:-6px 0 12px">Назви каналів переносяться з минулого тижня — вписуй лише числа</p>
         <div id="linksRows"></div>
         <button class="btn sm ghost" onclick="addRow('linksRows')">+ Додати канал</button>
       </div>
+    </div>
 
-      <div class="fgroup">
-        <h3>🎯 Посилання головного банера та YouTube</h3>
+    <div class="card">
+      <div class="fgroup" style="margin-bottom:8px">
+        <h3>🎯 Переходи з банера сайту та YouTube</h3>
+        <p class="sub" style="margin:-6px 0 12px">Кнопки на головному банері й посилання під відео</p>
         <div id="bannerRows"></div>
         <button class="btn sm ghost" onclick="addRow('bannerRows')">+ Додати посилання</button>
       </div>
+    </div>
 
+    <div class="sec"><h2>💰 Фінкар</h2><p>Дзвінки, сайт і база підписників у месенджерах</p></div>
+
+    <div class="card">
       <div class="fgroup">
-        <h3>💰 Фінкар</h3>
+        <h3>📞 Автообдзвон</h3>
+        <p class="sub" style="margin:-6px 0 12px">Підписи кнопок пояснюють іншим, що саме означають «1» і «2» — переносяться на наступні тижні</p>
         <div class="fields">
           <div><label>Продзвонено користувачів</label><input type="number" id="f_fc_called" placeholder="1878"></div>
           <div><label>Натиснули «1»</label><input type="number" id="f_fc_one" placeholder="51"></div>
           <div><label>Натиснули «2»</label><input type="number" id="f_fc_two" placeholder="59"></div>
           <div><label>Що означає кнопка «1»</label><input type="text" id="f_fc_oneLabel" placeholder="напр. цікавить пропозиція"></div>
           <div><label>Що означає кнопка «2»</label><input type="text" id="f_fc_twoLabel" placeholder="напр. передзвонити пізніше"></div>
-          <div><label>Активні користувачі сайту</label><input type="number" id="f_fc_active" placeholder="159"></div>
-          <div><label>Нові користувачі сайту</label><input type="number" id="f_fc_newUsers" placeholder="105"></div>
-          <div><label>Телеграм-бот, підписників</label><input type="number" id="f_fc_bot" placeholder="2536"></div>
-          <div><label>Телеграм-канал, підписників</label><input type="number" id="f_fc_channel" placeholder="496"></div>
-          <div><label>Вайбер, підписників</label><input type="number" id="f_fc_viber" placeholder="2120"></div>
         </div>
       </div>
 
-      <div class="actions">
+      <div class="fgroup">
+        <h3>🌐 Аналітика сайту</h3>
+        <p class="sub" style="margin:-6px 0 12px">Ті самі метрики, що й у Тракмаркета — для порівняння проєктів</p>
+        <div class="fields">
+          <div><label>Активні користувачі</label><input type="number" id="f_fc_active" placeholder="159"></div>
+          <div><label>Нові користувачі</label><input type="number" id="f_fc_newUsers" placeholder="105"></div>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <h3>📱 База підписників</h3>
+        <p class="sub" style="margin:-6px 0 12px">Загальна кількість підписників на момент звіту, не приріст за тиждень</p>
+        <div class="fields">
+          <div><label>Телеграм-бот</label><input type="number" id="f_fc_bot" placeholder="2536"></div>
+          <div><label>Вайбер</label><input type="number" id="f_fc_viber" placeholder="2120"></div>
+          <div><label>Телеграм-канал</label><input type="number" id="f_fc_channel" placeholder="496"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card save-bar">
+      <div class="actions" style="margin:0">
         <button class="btn primary" onclick="saveWeek()">💾 Зберегти тиждень</button>
         <button class="btn ghost" onclick="resetForm()">Очистити форму</button>
         <span id="editNote" style="align-self:center;color:#718096;font-size:.9em"></span>
