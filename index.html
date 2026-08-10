@@ -56,6 +56,28 @@
   .card{background:#fff;border-radius:15px;padding:24px;margin-bottom:20px;box-shadow:0 5px 20px rgba(0,0,0,.12)}
   .card h2{font-size:1.25em;margin-bottom:4px}
   .card .sub{color:#a0aec0;font-size:.9em;margin-bottom:16px}
+
+  /* заголовок смислового блоку */
+  .sec{color:#fff;margin:30px 0 14px}
+  .sec:first-child{margin-top:0}
+  .sec h2{font-size:1.4em;margin-bottom:3px;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .sec p{font-size:.93em;opacity:.85}
+
+  /* великий показник + діаграма поруч */
+  .big-row{display:flex;gap:26px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+  .big-num{flex:1 1 260px}
+  .big-num .bn{font-size:3.6em;font-weight:800;line-height:1;color:#2d3748}
+  .big-num .bl{color:#718096;text-transform:uppercase;font-size:.85em;letter-spacing:.5px;font-weight:600;margin-top:4px}
+  .explain{margin-top:16px;background:#f7fafc;border-radius:11px;padding:13px 15px;line-height:1.65;font-size:.95em}
+  .big-chart{flex:1 1 280px;position:relative;height:240px}
+  .minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;
+    border-top:1px solid #edf2f7;padding-top:18px}
+  .mini{border-left:4px solid #cbd5e0;padding-left:13px}
+  .mini .mt{font-size:.76em;text-transform:uppercase;letter-spacing:.4px;color:#718096;font-weight:700}
+  .mini .mv{font-size:1.75em;font-weight:700;line-height:1.25}
+  .mini .mn{font-size:.82em;color:#a0aec0;line-height:1.45}
+  .stats-grid.two{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:560px){.stats-grid.two{grid-template-columns:1fr}}
   .chart-wrap{position:relative;height:320px}
   .chart-wrap.short{height:250px}
   .charts-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
@@ -186,6 +208,8 @@
           <div><label>Продзвонено користувачів</label><input type="number" id="f_fc_called" placeholder="1878"></div>
           <div><label>Натиснули «1»</label><input type="number" id="f_fc_one" placeholder="51"></div>
           <div><label>Натиснули «2»</label><input type="number" id="f_fc_two" placeholder="59"></div>
+          <div><label>Що означає кнопка «1»</label><input type="text" id="f_fc_oneLabel" placeholder="напр. цікавить пропозиція"></div>
+          <div><label>Що означає кнопка «2»</label><input type="text" id="f_fc_twoLabel" placeholder="напр. передзвонити пізніше"></div>
           <div><label>Активні користувачі сайту</label><input type="number" id="f_fc_active" placeholder="159"></div>
           <div><label>Нові користувачі сайту</label><input type="number" id="f_fc_newUsers" placeholder="105"></div>
           <div><label>Телеграм-бот, підписників</label><input type="number" id="f_fc_bot" placeholder="2536"></div>
@@ -499,44 +523,78 @@ function drawTM(w, linksTotal, rev, adsT){
 }
 
 /* ================== ДАШБОРД: ФІНКАР ================== */
+function mini(color, title, value, note){
+  return '<div class="mini" style="border-left-color:' + color + '">' +
+         '<div class="mt">' + title + '</div><div class="mv">' + value + '</div>' +
+         '<div class="mn">' + note + '</div></div>';
+}
+
 function renderFC(){
   var host = document.getElementById('fc');
   if (!weeks.length) { host.innerHTML = '<div class="card"><div class="empty">Даних ще немає. Відкрий вкладку «Внести дані» 👆</div></div>'; return; }
   var w = weeks[weeks.length - 1], p = weeks[weeks.length - 2];
   var f = w.fc, pf = p ? p.fc : null;
   var reactions = f.one + f.two, resp = pct(reactions, f.called);
+  var noresp = Math.max(f.called - reactions, 0);
   var subs = f.bot + f.channel + f.viber;
+  var l1 = f.oneLabel ? f.oneLabel : 'що означає «1» — впиши в адмінці';
+  var l2 = f.twoLabel ? f.twoLabel : 'що означає «2» — впиши в адмінці';
+  var prevResp = pf ? pct(pf.one + pf.two, pf.called) : null;
 
-  var html = '<div class="stats-grid">' +
-    kpi('', '📞 Продзвонено', fmt(f.called), pf ? delta(f.called, pf.called).html : '<span class="neutral">автообдзвон за тиждень</span>') +
-    kpi(resp >= 5 ? 'good' : 'bad', '✅ Загальний відгук', resp.toFixed(1) + '%', '<span class="neutral">' + fmt(reactions) + ' людей натиснули кнопку</span>') +
-    kpi('', '1️⃣ Натиснули «1»', fmt(f.one), '<span class="neutral">' + pct(f.one, f.called).toFixed(1) + '% від бази дзвінків</span>') +
-    kpi('', '2️⃣ Натиснули «2»', fmt(f.two), '<span class="neutral">' + pct(f.two, f.called).toFixed(1) + '% від бази дзвінків</span>') +
-    kpi(pf && f.active >= pf.active ? 'good' : 'bad', '👥 Активні на сайті', fmt(f.active), pf ? delta(f.active, pf.active).html : '<span class="neutral">перший тиждень</span>') +
-    kpi(pf && f.newUsers >= pf.newUsers ? 'good' : 'bad', '✨ Нові на сайті', fmt(f.newUsers), pf ? delta(f.newUsers, pf.newUsers).html : '<span class="neutral">перший тиждень</span>') +
-    '</div>';
+  /* ---------- 1. АВТООБДЗВОН ---------- */
+  var html = '<div class="sec"><h2>📞 Автообдзвон</h2><p>Обдзвон бази записаним повідомленням: скільки людей дослухали й натиснули кнопку</p></div>';
 
-  html += '<div class="charts-2">' +
-    '<div class="card"><h2>📞 Структура відгуку</h2><p class="sub">' + fmt(f.called) + ' дзвінків, ' + fmt(reactions) + ' реакцій</p><div class="chart-wrap"><canvas id="cCall"></canvas></div></div>' +
-    '<div class="card"><h2>📱 Підписники по каналах</h2><p class="sub">' + fmt(subs) + ' підписок разом</p><div class="chart-wrap"><canvas id="cSubs"></canvas></div></div>' +
-    '</div>';
-
-  if (weeks.length > 1) {
-    html += '<div class="charts-2">' +
-      '<div class="card"><h2>📈 Динаміка сайту</h2><p class="sub">По тижнях</p><div class="chart-wrap"><canvas id="cFcUsers"></canvas></div></div>' +
-      '<div class="card"><h2>📞 Відгук на автообдзвон</h2><p class="sub">% від продзвонених, по тижнях</p><div class="chart-wrap"><canvas id="cFcResp"></canvas></div></div>' +
+  html += '<div class="card">' +
+    '<div class="big-row">' +
+      '<div class="big-num">' +
+        '<div class="bn">' + resp.toFixed(1) + '%</div>' +
+        '<div class="bl">відгукнулись на дзвінок</div>' +
+        '<div class="explain">Продзвонили <b>' + fmt(f.called) + '</b> людей. Кнопку натиснули <b>' + fmt(reactions) + '</b>, ' +
+          'не відреагували <b>' + fmt(noresp) + '</b>.' +
+          (prevResp !== null ? ' Тижнем раніше відгук був <b>' + prevResp.toFixed(1) + '%</b>.' : '') + '</div>' +
       '</div>' +
-      '<div class="card"><h2>📱 Зростання бази підписників</h2><p class="sub">Накопичувально, по тижнях</p><div class="chart-wrap"><canvas id="cFcSubs"></canvas></div></div>' +
-      '<div class="card"><h2>⚖️ Тракмаркет vs Фінкар</h2><p class="sub">Активні користувачі сайтів, по тижнях</p><div class="chart-wrap"><canvas id="cVs"></canvas></div></div>';
+      '<div class="big-chart"><canvas id="cCall"></canvas></div>' +
+    '</div>' +
+    '<div class="minis">' +
+      mini('#a0aec0', '📞 Продзвонено', fmt(f.called), pf ? delta(f.called, pf.called).html : 'за тиждень') +
+      mini('#667eea', '1️⃣ Натиснули «1»', fmt(f.one), l1 + ' · ' + pct(f.one, f.called).toFixed(1) + '% бази') +
+      mini('#ecc94b', '2️⃣ Натиснули «2»', fmt(f.two), l2 + ' · ' + pct(f.two, f.called).toFixed(1) + '% бази') +
+      mini('#48bb78', '✅ Разом реакцій', fmt(reactions), pf ? delta(reactions, pf.one + pf.two).html : 'за тиждень') +
+    '</div></div>';
+
+  /* ---------- 2. САЙТ ---------- */
+  html += '<div class="sec"><h2>🌐 Сайт Фінкар</h2><p>Відвідуваність за тиждень, порівняно з попереднім</p></div>';
+  html += '<div class="stats-grid two">' +
+    kpi(pf && f.active >= pf.active ? 'good' : 'bad', '👥 Активні користувачі', fmt(f.active), pf ? delta(f.active, pf.active).html : '<span class="neutral">перший тиждень</span>') +
+    kpi(pf && f.newUsers >= pf.newUsers ? 'good' : 'bad', '✨ Нові користувачі', fmt(f.newUsers), pf ? delta(f.newUsers, pf.newUsers).html : '<span class="neutral">перший тиждень</span>') +
+    '</div>';
+
+  /* ---------- 3. БАЗА ПІДПИСНИКІВ ---------- */
+  html += '<div class="sec"><h2>📱 База підписників</h2><p>' + fmt(subs) + ' підписок разом — це аудиторія, до якої можна достукатись без реклами</p></div>';
+  html += '<div class="charts-2">' +
+    '<div class="card"><h2>Розподіл по каналах</h2><p class="sub">Частка кожного каналу</p><div class="chart-wrap"><canvas id="cSubs"></canvas></div></div>' +
+    '<div class="card"><h2>Деталізація</h2><p class="sub">Скільки людей у кожному каналі</p><table><thead><tr><th>Канал</th><th class="num">Підписники</th><th class="num">Частка</th>' + (p ? '<th class="num">Тиждень тому</th>' : '') + '</tr></thead><tbody>' +
+      subRow('Телеграм-бот', f.bot, subs, pf && pf.bot, p) +
+      subRow('Вайбер', f.viber, subs, pf && pf.viber, p) +
+      subRow('Телеграм-канал', f.channel, subs, pf && pf.channel, p) +
+      '<tr style="background:#f7fafc"><td><b>Разом</b></td><td class="num"><b>' + fmt(subs) + '</b></td><td class="num"><b>100%</b></td>' + (p ? '<td></td>' : '') + '</tr></tbody></table></div>' +
+    '</div>';
+
+  /* ---------- 4. ДИНАМІКА ---------- */
+  if (weeks.length > 1) {
+    html += '<div class="sec"><h2>📈 Динаміка по тижнях</h2><p>Всього тижнів у базі: ' + weeks.length + '</p></div>';
+    html += '<div class="charts-2">' +
+      '<div class="card"><h2>Користувачі сайту</h2><p class="sub">Активні та нові</p><div class="chart-wrap"><canvas id="cFcUsers"></canvas></div></div>' +
+      '<div class="card"><h2>Відгук на автообдзвон</h2><p class="sub">% від продзвонених</p><div class="chart-wrap"><canvas id="cFcResp"></canvas></div></div>' +
+      '</div>' +
+      '<div class="charts-2">' +
+      '<div class="card"><h2>Зростання бази підписників</h2><p class="sub">Накопичувально</p><div class="chart-wrap"><canvas id="cFcSubs"></canvas></div></div>' +
+      '<div class="card"><h2>Тракмаркет vs Фінкар</h2><p class="sub">Активні користувачі сайтів</p><div class="chart-wrap"><canvas id="cVs"></canvas></div></div>' +
+      '</div>';
   }
 
-  html += '<div class="card"><h2>📋 Деталізація по каналах</h2><p class="sub">Де зараз знаходиться база</p><table><thead><tr><th>Канал</th><th class="num">Підписники</th><th class="num">Частка</th>' + (p ? '<th class="num">Було тижнем раніше</th>' : '') + '</tr></thead><tbody>' +
-    subRow('Телеграм-бот', f.bot, subs, pf && pf.bot, p) +
-    subRow('Вайбер', f.viber, subs, pf && pf.viber, p) +
-    subRow('Телеграм-канал', f.channel, subs, pf && pf.channel, p) +
-    '<tr style="background:#f7fafc"><td><b>Разом</b></td><td class="num"><b>' + fmt(subs) + '</b></td><td class="num"><b>100%</b></td>' + (p ? '<td></td>' : '') + '</tr></tbody></table></div>';
-
-  html += '<div class="card"><h2>💡 Ключові інсайти — Фінкар</h2>' + insightsFC(w, p, resp, subs) + '</div>';
+  html += '<div class="sec"><h2>💡 Ключові інсайти</h2><p>Формуються автоматично з цифр цього тижня</p></div>';
+  html += '<div class="card">' + insightsFC(w, p, resp, subs) + '</div>';
 
   host.innerHTML = html;
   drawFC(w);
@@ -643,6 +701,9 @@ function resetForm(){
   editingId = null;
   document.getElementById('editNote').textContent = '';
   document.querySelectorAll('#adm input[type=number]').forEach(function(i){ i.value = ''; });
+  var lastW = weeks[weeks.length - 1];
+  document.getElementById('f_fc_oneLabel').value = (lastW && lastW.fc.oneLabel) || '';
+  document.getElementById('f_fc_twoLabel').value = (lastW && lastW.fc.twoLabel) || '';
 
   var last = weeks[weeks.length - 1];
   var from = new Date(), to = new Date();
@@ -669,6 +730,8 @@ function fillForm(w){
   document.getElementById('f_to').value = w.to;
   ['newUsers','newAds','payments','active','newVisitors','group','resumes'].forEach(function(k){ document.getElementById('f_tm_' + k).value = w.tm[k]; });
   ['called','one','two','active','newUsers','bot','channel','viber'].forEach(function(k){ document.getElementById('f_fc_' + k).value = w.fc[k]; });
+  document.getElementById('f_fc_oneLabel').value = w.fc.oneLabel || '';
+  document.getElementById('f_fc_twoLabel').value = w.fc.twoLabel || '';
   var lr = document.getElementById('linksRows'), br = document.getElementById('bannerRows');
   var rr = document.getElementById('revenueRows'), ar = document.getElementById('adsRows');
   lr.innerHTML = ''; br.innerHTML = ''; rr.innerHTML = ''; ar.innerHTML = '';
@@ -691,7 +754,9 @@ function saveWeek(){
     revenue: readRows('revenueRows').filter(function(x){ return x.v > 0; }),
     adsByType: readRows('adsRows').filter(function(x){ return x.v > 0; }),
     fc: { called: num('f_fc_called'), one: num('f_fc_one'), two: num('f_fc_two'), active: num('f_fc_active'),
-          newUsers: num('f_fc_newUsers'), bot: num('f_fc_bot'), channel: num('f_fc_channel'), viber: num('f_fc_viber') }
+          newUsers: num('f_fc_newUsers'), bot: num('f_fc_bot'), channel: num('f_fc_channel'), viber: num('f_fc_viber'),
+          oneLabel: document.getElementById('f_fc_oneLabel').value.trim(),
+          twoLabel: document.getElementById('f_fc_twoLabel').value.trim() }
   };
   var idx = weeks.findIndex(function(x){ return x.id === w.id; });
   if (idx >= 0) weeks[idx] = w; else weeks.push(w);
