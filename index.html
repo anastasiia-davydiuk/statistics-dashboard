@@ -436,6 +436,8 @@ function renderTM(){
       '<div class="card"><h2>🎉 Резюме водіїв</h2><p class="sub">По тижнях</p><div class="chart-wrap"><canvas id="cRes"></canvas></div></div>' +
       '</div>';
   } else {
+    html += '<div class="card"><div class="hint" style="margin:0">Це поки перший збережений тиждень. Як тільки додаси другий — тут з\'являться графіки динаміки й відсотки зростання.</div></div>';
+  }
 
   html += '<div class="charts-2">' +
     '<div class="card"><h2>🔗 Лінктрі</h2><p class="sub">' + fmt(linksTotal) + ' переходів за тиждень</p><div class="chart-wrap"><canvas id="cLinks"></canvas></div></div>' +
