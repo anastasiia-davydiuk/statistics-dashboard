@@ -1,7 +1,15 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Статистика Тракмаркет і Фінкар</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   /* Layout: кольоровий фон-підкладка, білі робочі картки, зверху вибір тижня; аналітика завжди відносно попередніх тижнів */
   :root{
@@ -34,6 +42,12 @@
     color-scheme:dark }
 
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html,body{margin:0}
+  .head-right{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+  .lform{display:flex;flex-direction:column;gap:12px}
+  .lform h2{font-size:1.2em;font-weight:800}
+  .lerr{color:var(--bad);font-size:.9em;min-height:1.2em}
   body{font-family:var(--font);background:var(--ground1);background-image:linear-gradient(135deg,var(--ground1) 0%,var(--ground2) 100%);
     background-attachment:fixed;min-height:100vh;color:var(--fg);padding:20px 16px;font-size:15px}
   .container{max-width:1400px;margin:0 auto;display:flex;flex-direction:column}
@@ -189,8 +203,11 @@
   .modal{position:fixed;inset:0;background:rgba(10,12,24,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
   .mbox{background:var(--surface);border-radius:16px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:18px}
   .mbox p{line-height:1.6}
+  input[type=email],input[type=password]{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:10px;font:inherit;color:var(--fg);background:var(--surface)}
   @media (max-width:640px){.header h1{font-size:1.4em}.rowline{grid-template-columns:minmax(0,1fr) 92px 42px}.big-num .bn{font-size:2.8em}}
 </style>
+</head>
+<body>
 
 <div class="container">
 
@@ -199,9 +216,13 @@
       <h1>📊 Статистика проектів</h1>
       <p class="period" id="periodLine">Тракмаркет &amp; Фінкар</p>
     </div>
-    <div class="weekpick" id="weekPickWrap" hidden>
-      <label for="weekSel">Показати тиждень</label>
-      <select id="weekSel"></select>
+    <div class="head-right">
+      <div class="weekpick" id="weekPickWrap" hidden>
+        <label for="weekSel">Показати тиждень</label>
+        <select id="weekSel"></select>
+      </div>
+      <button class="btn ghost sm" id="loginBtn">🔒 Адмінка</button>
+      <button class="btn ghost sm" id="logoutBtn" hidden>Вийти</button>
     </div>
   </div>
 
@@ -410,6 +431,18 @@
 </div>
 
 <div class="toast" id="toast" role="status"></div>
+<div class="modal" id="loginModal" hidden>
+  <form class="mbox lform" id="loginForm" role="dialog" aria-modal="true" aria-labelledby="lTitle">
+    <h2 id="lTitle">🔒 Вхід в адмінку</h2>
+    <div><label for="lEmail">Пошта</label><input type="email" id="lEmail" autocomplete="username" required></div>
+    <div><label for="lPass">Пароль</label><input type="password" id="lPass" autocomplete="current-password" required></div>
+    <div class="lerr" id="lErr" role="alert"></div>
+    <div class="actions">
+      <button class="btn primary" type="submit" id="lOk">Увійти</button>
+      <button class="btn ghost" type="button" id="lNo">Скасувати</button>
+    </div>
+  </form>
+</div>
 <div class="modal" id="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true">
     <p id="mText"></p>
@@ -421,6 +454,17 @@
 </div>
 
 <script>
+/* ================== НАЛАШТУВАННЯ FIREBASE ==================
+   Встав сюди конфіг свого веб-застосунку з Firebase:
+   Project settings → General → Your apps → Web app → SDK setup and configuration → Config */
+var FIREBASE_CONFIG = {
+  apiKey: "ВСТАВ_СЮДИ",
+  authDomain: "ВСТАВ_СЮДИ.firebaseapp.com",
+  projectId: "ВСТАВ_СЮДИ",
+  appId: "ВСТАВ_СЮДИ"
+};
+var COLL_PREFIX = 'statsDashboard';   // усі дані дашборду лежать у Firestore під statsDashboard/…
+
 /* ================== СТАН ================== */
 var db = null, canWrite = false, downloads = null;
 var weeks = [];          // усі тижні, відсортовані за датою
@@ -428,7 +472,7 @@ var selFrom = null;      // який тиждень зараз показуєт�
 var editingFrom = null;  // який тиждень редагується (null = новий)
 var formReady = false;
 var charts = {};
-var COLL = 'weeks';      // кожен тиждень — окремий документ, id = дата початку (2026-08-01)
+var COLL = COLL_PREFIX + '/data/weeks';      // кожен тиждень — окремий документ, id = дата початку (2026-08-01)
 
 /* ================== ХЕЛПЕРИ ================== */
 function $(id){ return document.getElementById(id); }
@@ -680,7 +724,7 @@ function trendInsights(keys, i){
 /* ================== ДАШБОРД: ТРАКМАРКЕТ ================== */
 function selIndex(){ var i = weeks.findIndex(function(w){ return w.from === selFrom; }); return i < 0 ? weeks.length - 1 : i; }
 function emptyHtml(){
-  if (!db) return '<div class="card"><div class="empty">Дані не завантажились. Відкрий дашборд у claude.ai, увійшовши в акаунт.</div></div>';
+  if (!db) return '<div class="card"><div class="empty">Дані не завантажились. Перевір інтернет і онови сторінку.</div></div>';
   return '<div class="card"><div class="empty">Тижнів ще немає.' + (canWrite ? '<br>Відкрий вкладку «Внести дані» або перенеси старі дані на вкладці «Тижні».' : '') + '</div></div>';
 }
 
@@ -1255,7 +1299,7 @@ async function saveWeek(){
   saving = true; $('saveBtn').disabled = true;
   try {
     await db.collection(COLL).doc(from).set(w);
-    try { await db.doc('settings/layout').set({ blocks: rb.tpl }); layout = { blocks: rb.tpl }; } catch (e) {}
+    try { await db.doc(COLL_PREFIX + '/layout').set({ blocks: rb.tpl }); layout = { blocks: rb.tpl }; } catch (e) {}
     if (editingFrom && editingFrom !== from) await db.collection(COLL).doc(editingFrom).delete();
     selFrom = from;
     pendingReset = true;
@@ -1267,8 +1311,9 @@ async function saveWeek(){
 }
 function saveError(e){
   var c = e && e.code;
-  if (c === 'invalid_argument') return 'Немає прав змінювати дані цього дашборду';
-  if (c === 'quota_exceeded') return 'Сховище заповнене — видали старі тижні';
+  if (c === 'permission-denied') return 'Немає прав змінювати дані. Увійди в адмінку ще раз';
+  if (c === 'unauthenticated') return 'Сесія завершилась. Увійди в адмінку ще раз';
+  if (c === 'resource-exhausted') return 'Перевищено ліміт Firebase. Спробуй пізніше';
   return 'Не вдалось зберегти. Перевір інтернет і спробуй ще раз';
 }
 
@@ -1326,11 +1371,14 @@ async function importFile(input){
   finally { $('importBtn').disabled = false; }
 }
 async function exportBackup(){
-  if (!downloads) { toast('Збереження файлів недоступне в цьому вікні'); return; }
   try {
-    await downloads.save({ filename: 'statystyka-backup-' + todayIso() + '.json', data: JSON.stringify({ weeks: weeks }, null, 2) });
+    var blob = new Blob([JSON.stringify({ weeks: weeks }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'statystyka-backup-' + todayIso() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
     toast('🗄️ Резервну копію збережено');
-  } catch (e) { if (e && e.code !== 'declined') toast('Не вдалось зберегти файл'); }
+  } catch (e) { toast('Не вдалось зберегти файл'); }
 }
 
 /* ================== НАВІГАЦІЯ І РЕНДЕР ================== */
@@ -1391,26 +1439,67 @@ new MutationObserver(function(){ if (weeks.length) renderAll(); }).observe(docum
 
 function status(t){ var el = $('statusLine'); el.textContent = t || ''; el.hidden = !t; }
 
-(async function boot(){
-  var C = window.claude;
-  db = C ? await C.use('db') : null;
-  if (!db) { status('Дані доступні лише в claude.ai для тих, хто увійшов в акаунт і має доступ до цього дашборду.'); renderAll(); return; }
-  var user = await C.use('user');
-  canWrite = user ? await user.canEdit() : false;
-  downloads = canWrite ? await C.use('downloads') : null;
-  if (canWrite) document.body.classList.add('unlocked');
+/* ================== ВХІД В АДМІНКУ ================== */
+function openLogin(){ $('lErr').textContent = ''; $('loginModal').hidden = false; $('lEmail').focus(); }
+function closeLogin(){ $('loginModal').hidden = true; $('lPass').value = ''; }
+function loginError(e){
+  var c = e && e.code;
+  if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') return 'Невірна пошта або пароль';
+  if (c === 'auth/too-many-requests') return 'Забагато спроб. Зачекай кілька хвилин';
+  if (c === 'auth/network-request-failed') return 'Немає інтернету';
+  return 'Не вдалось увійти. Спробуй ще раз';
+}
+$('loginBtn').onclick = openLogin;
+$('lNo').onclick = closeLogin;
+$('loginForm').onsubmit = async function(e){
+  e.preventDefault();
+  $('lOk').disabled = true; $('lErr').textContent = '';
+  try { await firebase.auth().signInWithEmailAndPassword($('lEmail').value.trim(), $('lPass').value); closeLogin(); }
+  catch (err) { $('lErr').textContent = loginError(err); }
+  finally { $('lOk').disabled = false; }
+};
+$('logoutBtn').onclick = function(){ firebase.auth().signOut().then(function(){ location.hash = ''; location.reload(); }); };
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('loginModal').hidden) closeLogin(); });
 
-  if (canWrite) { try { var ld = await db.doc('settings/layout').get(); if (ld.exists) layout = JSON.parse(JSON.stringify(ld.data())); } catch (e) {} }
+/* ================== ЗАПУСК ================== */
+var weeksLoaded = false;
+async function onAuth(u){
+  canWrite = !!u;
+  document.body.classList.toggle('unlocked', canWrite);
+  $('loginBtn').hidden = canWrite; $('logoutBtn').hidden = !canWrite;
+  if (!canWrite) {
+    var act = document.querySelector('.tab.active');
+    if (act && (act.dataset.tab === 'adm' || act.dataset.tab === 'dat')) switchTab('tm');
+    renderAll(); return;
+  }
+  try { var ld = await db.doc(COLL_PREFIX + '/layout').get(); if (ld.exists) layout = JSON.parse(JSON.stringify(ld.data())); } catch (e) {}
+  renderAll();
+  if (weeksLoaded && !formReady) { resetForm(); formReady = true; }
+  if (location.hash === '#admin') switchTab('adm');
+}
+(function boot(){
+  if (typeof firebase === 'undefined' || FIREBASE_CONFIG.apiKey.indexOf('ВСТАВ') === 0) {
+    status(typeof firebase === 'undefined' ? 'Не завантажилась бібліотека Firebase. Перевір інтернет і онови сторінку.' : 'Дашборд ще не підключений до Firebase: впиши конфіг на початку скрипта (FIREBASE_CONFIG).');
+    $('loginBtn').hidden = true; renderAll(); return;
+  }
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.firestore();
+  db.settings({ ignoreUndefinedProperties: true });
   db.collection(COLL).onSnapshot(function(snap){
     weeks = snap.docs.map(function(d){ var x = JSON.parse(JSON.stringify(d.data())); x.from = x.from || d.id; return x; })
       .filter(function(w){ return w.tm && w.fc; })
       .sort(function(a,b){ return a.from.localeCompare(b.from); });
     if (!selFrom || !weeks.some(function(w){ return w.from === selFrom; })) selFrom = weeks.length ? weeks[weeks.length - 1].from : null;
+    weeksLoaded = true;
     status('');
     renderAll();
     if (canWrite && (!formReady || pendingReset)) { resetForm(); formReady = true; pendingReset = false; }
   }, function(){
-    status('Зв’язок зі сховищем перервався. Онови сторінку.');
+    status('Не вдалось завантажити дані. Перевір інтернет і онови сторінку.');
   });
+  firebase.auth().onAuthStateChanged(onAuth);
+  if (location.hash === '#admin' && !firebase.auth().currentUser) setTimeout(function(){ if (!canWrite) openLogin(); }, 800);
 })();
 </script>
+</body>
+</html>
