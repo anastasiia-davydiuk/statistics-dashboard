@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="utf-8">
@@ -7,9 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- ===== ДАНІ. Сюди записуються тижні, коли ти завантажуєш файл для публікації. Руками чіпати не треба ===== -->
+<script id="seedData" type="application/json">{"weeks": [{"adsByType": [], "banner": [{"name": "Залишити резюме", "v": 125}, {"name": "Сайт з YouTube-відео", "v": 29}, {"name": "Рішення для бізнесу", "v": 15}, {"name": "Відео YouTube", "v": 7}], "fc": {"active": 159, "bot": 2536, "called": 1878, "channel": 496, "newUsers": 105, "one": 51, "oneLabel": "", "two": 59, "twoLabel": "", "viber": 2120}, "from": "2026-08-01", "links": [{"name": "Сайт", "v": 2055}, {"name": "Резюме водія", "v": 351}, {"name": "Масла EUROLUB", "v": 256}, {"name": "YouTube", "v": 244}, {"name": "Instagram", "v": 97}, {"name": "Курс LABA", "v": 13}, {"name": "Facebook", "v": 6}], "revenue": [], "savedAt": "2026-10-06T07:30:00.000Z", "tm": {"active": 939, "group": 4316, "newAds": 9, "newUsers": 9, "newVisitors": 756, "payments": 5800, "resumes": 123}, "to": "2026-08-07"}]}</script>
 <style>
   /* Layout: кольоровий фон-підкладка, білі робочі картки, зверху вибір тижня; аналітика завжди відносно попередніх тижнів */
   :root{
@@ -44,10 +44,7 @@
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   html,body{margin:0}
-  .head-right{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
-  .lform{display:flex;flex-direction:column;gap:12px}
-  .lform h2{font-size:1.2em;font-weight:800}
-  .lerr{color:var(--bad);font-size:.9em;min-height:1.2em}
+  .pubbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--warnbg);border-left:4px solid var(--warn);color:var(--fg)}
   body{font-family:var(--font);background:var(--ground1);background-image:linear-gradient(135deg,var(--ground1) 0%,var(--ground2) 100%);
     background-attachment:fixed;min-height:100vh;color:var(--fg);padding:20px 16px;font-size:15px}
   .container{max-width:1400px;margin:0 auto;display:flex;flex-direction:column}
@@ -203,7 +200,6 @@
   .modal{position:fixed;inset:0;background:rgba(10,12,24,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
   .mbox{background:var(--surface);border-radius:16px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:18px}
   .mbox p{line-height:1.6}
-  input[type=email],input[type=password]{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:10px;font:inherit;color:var(--fg);background:var(--surface)}
   @media (max-width:640px){.header h1{font-size:1.4em}.rowline{grid-template-columns:minmax(0,1fr) 92px 42px}.big-num .bn{font-size:2.8em}}
 </style>
 </head>
@@ -216,17 +212,17 @@
       <h1>📊 Статистика проектів</h1>
       <p class="period" id="periodLine">Тракмаркет &amp; Фінкар</p>
     </div>
-    <div class="head-right">
-      <div class="weekpick" id="weekPickWrap" hidden>
-        <label for="weekSel">Показати тиждень</label>
-        <select id="weekSel"></select>
-      </div>
-      <button class="btn ghost sm" id="loginBtn">🔒 Адмінка</button>
-      <button class="btn ghost sm" id="logoutBtn" hidden>Вийти</button>
+    <div class="weekpick" id="weekPickWrap" hidden>
+      <label for="weekSel">Показати тиждень</label>
+      <select id="weekSel"></select>
     </div>
   </div>
 
   <div class="status" id="statusLine" hidden></div>
+  <div class="status pubbar" id="pubBar" hidden>
+    <span>📌 Є зміни, яких ще немає на сайті. Завантаж файл для публікації і заміни ним index.html на GitHub.</span>
+    <button class="btn primary sm" id="publishBtn2">📄 Файл для публікації</button>
+  </div>
 
   <div class="tabs" id="tabs">
     <button class="tab active" data-tab="tm">🚚 Тракмаркет</button>
@@ -249,7 +245,7 @@
       </div>
       <div class="hint" style="margin-top:16px">
         Дати підставляються самі — наступний тиждень після останнього збереженого.
-        Після збереження тиждень одразу бачать усі, хто відкриває дашборд. Порівняння з минулими тижнями рахуються самі.
+        Після збереження завантаж «📄 Файл для публікації» і заміни ним index.html на GitHub — тоді новий тиждень побачать усі. Порівняння з минулими тижнями рахуються самі.
       </div>
     </div>
 
@@ -412,8 +408,14 @@
   <div class="panel" id="dat">
     <div class="card">
       <h2>💾 Збережені тижні</h2>
-      <p class="sub">Усі тижні зберігаються разом із дашбордом і доступні з будь-якого пристрою</p>
+      <p class="sub">Тижні зашиті в сам файл дашборду. Нове, що ти внесла, тримається в цьому браузері, доки ти не опублікуєш файл</p>
       <ul class="weeks" id="weeksList"></ul>
+    </div>
+
+    <div class="card">
+      <h2>📄 Опублікувати</h2>
+      <p class="sub">Завантажиться index.html з усіма тижнями. Заміни ним файл у репозиторії на GitHub — за 1–2 хвилини сайт оновиться. Адмінка в ньому так само відкривається через #admin</p>
+      <div class="actions"><button class="btn primary" id="publishBtn">📄 Завантажити файл для публікації</button></div>
     </div>
 
     <div class="card">
@@ -431,18 +433,6 @@
 </div>
 
 <div class="toast" id="toast" role="status"></div>
-<div class="modal" id="loginModal" hidden>
-  <form class="mbox lform" id="loginForm" role="dialog" aria-modal="true" aria-labelledby="lTitle">
-    <h2 id="lTitle">🔒 Вхід в адмінку</h2>
-    <div><label for="lEmail">Пошта</label><input type="email" id="lEmail" autocomplete="username" required></div>
-    <div><label for="lPass">Пароль</label><input type="password" id="lPass" autocomplete="current-password" required></div>
-    <div class="lerr" id="lErr" role="alert"></div>
-    <div class="actions">
-      <button class="btn primary" type="submit" id="lOk">Увійти</button>
-      <button class="btn ghost" type="button" id="lNo">Скасувати</button>
-    </div>
-  </form>
-</div>
 <div class="modal" id="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true">
     <p id="mText"></p>
@@ -454,16 +444,13 @@
 </div>
 
 <script>
-/* ================== НАЛАШТУВАННЯ FIREBASE ==================
-   Встав сюди конфіг свого веб-застосунку з Firebase:
-   Project settings → General → Your apps → Web app → SDK setup and configuration → Config */
-var FIREBASE_CONFIG = {
-  apiKey: "ВСТАВ_СЮДИ",
-  authDomain: "ВСТАВ_СЮДИ.firebaseapp.com",
-  projectId: "ВСТАВ_СЮДИ",
-  appId: "ВСТАВ_СЮДИ"
-};
-var COLL_PREFIX = 'statsDashboard';   // усі дані дашборду лежать у Firestore під statsDashboard/…
+/* ================== НАЛАШТУВАННЯ ==================
+   Код входу в адмінку. Щоб відкрити адмінку — додай #admin в кінець адреси і введи код. */
+var ADMIN_PIN = '2608';
+/* ================================================== */
+
+/* Чиста копія сторінки — з неї збирається файл для публікації */
+var PRISTINE = document.documentElement.outerHTML;
 
 /* ================== СТАН ================== */
 var db = null, canWrite = false, downloads = null;
@@ -472,7 +459,7 @@ var selFrom = null;      // який тиждень зараз показуєт�
 var editingFrom = null;  // який тиждень редагується (null = новий)
 var formReady = false;
 var charts = {};
-var COLL = COLL_PREFIX + '/data/weeks';      // кожен тиждень — окремий документ, id = дата початку (2026-08-01)
+var COLL = 'weeks';      // кожен тиждень — окремий документ, id = дата початку (2026-08-01)
 
 /* ================== ХЕЛПЕРИ ================== */
 function $(id){ return document.getElementById(id); }
@@ -724,7 +711,7 @@ function trendInsights(keys, i){
 /* ================== ДАШБОРД: ТРАКМАРКЕТ ================== */
 function selIndex(){ var i = weeks.findIndex(function(w){ return w.from === selFrom; }); return i < 0 ? weeks.length - 1 : i; }
 function emptyHtml(){
-  if (!db) return '<div class="card"><div class="empty">Дані не завантажились. Перевір інтернет і онови сторінку.</div></div>';
+  if (!db) return '<div class="card"><div class="empty">Дані не завантажились. Онови сторінку.</div></div>';
   return '<div class="card"><div class="empty">Тижнів ще немає.' + (canWrite ? '<br>Відкрий вкладку «Внести дані» або перенеси старі дані на вкладці «Тижні».' : '') + '</div></div>';
 }
 
@@ -1299,7 +1286,7 @@ async function saveWeek(){
   saving = true; $('saveBtn').disabled = true;
   try {
     await db.collection(COLL).doc(from).set(w);
-    try { await db.doc(COLL_PREFIX + '/layout').set({ blocks: rb.tpl }); layout = { blocks: rb.tpl }; } catch (e) {}
+    try { await db.doc('settings/layout').set({ blocks: rb.tpl }); layout = { blocks: rb.tpl }; } catch (e) {}
     if (editingFrom && editingFrom !== from) await db.collection(COLL).doc(editingFrom).delete();
     selFrom = from;
     pendingReset = true;
@@ -1311,9 +1298,8 @@ async function saveWeek(){
 }
 function saveError(e){
   var c = e && e.code;
-  if (c === 'permission-denied') return 'Немає прав змінювати дані. Увійди в адмінку ще раз';
-  if (c === 'unauthenticated') return 'Сесія завершилась. Увійди в адмінку ще раз';
-  if (c === 'resource-exhausted') return 'Перевищено ліміт Firebase. Спробуй пізніше';
+  if (c === 'invalid_argument') return 'Немає прав змінювати дані цього дашборду';
+  if (c === 'quota_exceeded') return 'Сховище заповнене — видали старі тижні';
   return 'Не вдалось зберегти. Перевір інтернет і спробуй ще раз';
 }
 
@@ -1372,11 +1358,7 @@ async function importFile(input){
 }
 async function exportBackup(){
   try {
-    var blob = new Blob([JSON.stringify({ weeks: weeks }, null, 2)], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'statystyka-backup-' + todayIso() + '.json';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    download('statystyka-backup-' + todayIso() + '.json', JSON.stringify({ weeks: weeks }, null, 2), 'application/json');
     toast('🗄️ Резервну копію збережено');
   } catch (e) { toast('Не вдалось зберегти файл'); }
 }
@@ -1439,66 +1421,113 @@ new MutationObserver(function(){ if (weeks.length) renderAll(); }).observe(docum
 
 function status(t){ var el = $('statusLine'); el.textContent = t || ''; el.hidden = !t; }
 
-/* ================== ВХІД В АДМІНКУ ================== */
-function openLogin(){ $('lErr').textContent = ''; $('loginModal').hidden = false; $('lEmail').focus(); }
-function closeLogin(){ $('loginModal').hidden = true; $('lPass').value = ''; }
-function loginError(e){
-  var c = e && e.code;
-  if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') return 'Невірна пошта або пароль';
-  if (c === 'auth/too-many-requests') return 'Забагато спроб. Зачекай кілька хвилин';
-  if (c === 'auth/network-request-failed') return 'Немає інтернету';
-  return 'Не вдалось увійти. Спробуй ще раз';
+/* ================== СХОВИЩЕ: ФАЙЛ + ЦЕЙ БРАУЗЕР ==================
+   Тижні зашиті у файл (seedData). Те, що адмінка змінює, тримається в цьому браузері,
+   поки не завантажиш файл для публікації. db нижче має ті самі виклики, що й раніше. */
+var LS_KEY = 'stats-dashboard-v2', SESSION = 'stats-dashboard-unlocked';
+var SEED = (function(){ try { return JSON.parse($('seedData').textContent); } catch (e) { return { weeks: [] }; } })();
+var store = { weeks: {}, deleted: {}, layout: SEED.layout || null };
+var listener = null;
+function lsGet(){ try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { return null; } }
+function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {} }
+function copy(o){ return JSON.parse(JSON.stringify(o)); }
+function loadStore(useLocal){
+  (SEED.weeks || []).forEach(function(w){ if (w && validFrom(w.from)) store.weeks[w.from] = clean(Object.assign({}, w, { savedAt: undefined })) ; });
+  (SEED.weeks || []).forEach(function(w){ if (w && validFrom(w.from) && store.weeks[w.from]) store.weeks[w.from].savedAt = w.savedAt || ''; });
+  if (!useLocal) return;
+  var loc = lsGet();
+  if (!loc) return;
+  // тижні з браузера — якщо новіші за ті, що у файлі
+  Object.keys(loc.weeks || {}).forEach(function(k){
+    var a = loc.weeks[k], b = store.weeks[k];
+    if (!b || (a.savedAt || '') > (b.savedAt || '')) store.weeks[k] = a;
+  });
+  // видалені в браузері — якщо у файлі немає новішої версії
+  Object.keys(loc.deleted || {}).forEach(function(k){
+    var b = store.weeks[k];
+    if (b && (b.savedAt || '') <= loc.deleted[k]) delete store.weeks[k];
+    store.deleted[k] = loc.deleted[k];
+  });
+  if (loc.layout) store.layout = loc.layout;
 }
-$('loginBtn').onclick = openLogin;
-$('lNo').onclick = closeLogin;
-$('loginForm').onsubmit = async function(e){
-  e.preventDefault();
-  $('lOk').disabled = true; $('lErr').textContent = '';
-  try { await firebase.auth().signInWithEmailAndPassword($('lEmail').value.trim(), $('lPass').value); closeLogin(); }
-  catch (err) { $('lErr').textContent = loginError(err); }
-  finally { $('lOk').disabled = false; }
-};
-$('logoutBtn').onclick = function(){ firebase.auth().signOut().then(function(){ location.hash = ''; location.reload(); }); };
-document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('loginModal').hidden) closeLogin(); });
+function notify(){
+  if (!listener) return;
+  var snap = { docs: Object.keys(store.weeks).map(function(id){ return { id: id, data: function(){ return store.weeks[id]; } }; }) };
+  setTimeout(function(){ listener(snap); updatePubBar(); }, 0);
+}
+function localDb(){
+  return {
+    collection: function(){ return {
+      doc: function(id){ return {
+        set: async function(v){ store.weeks[id] = copy(v); delete store.deleted[id]; persist(); notify(); },
+        delete: async function(){ delete store.weeks[id]; store.deleted[id] = new Date().toISOString(); persist(); notify(); }
+      }; },
+      onSnapshot: function(cb){ listener = cb; notify(); }
+    }; },
+    doc: function(){ return {
+      get: async function(){ return { exists: !!store.layout, data: function(){ return store.layout; } }; },
+      set: async function(v){ store.layout = copy(v); persist(); updatePubBar(); }
+    }; }
+  };
+}
+function stable(v){
+  if (Array.isArray(v)) return '[' + v.map(stable).join(',') + ']';
+  if (v && typeof v === 'object') return '{' + Object.keys(v).filter(function(k){ return k !== 'savedAt' && v[k] !== undefined; }).sort().map(function(k){ return JSON.stringify(k) + ':' + stable(v[k]); }).join(',') + '}';
+  return JSON.stringify(v === undefined ? null : v);
+}
+function snapshotOf(ws, lay){ return stable({ w: ws.map(function(w){ return clean(w); }).sort(function(a,b){ return a.from.localeCompare(b.from); }), l: lay || null }); }
+function updatePubBar(){
+  if (!canWrite) return;
+  var cur = Object.keys(store.weeks).map(function(k){ return store.weeks[k]; });
+  $('pubBar').hidden = snapshotOf(cur, store.layout) === snapshotOf(SEED.weeks || [], SEED.layout);
+}
+
+/* ================== ФАЙЛИ ================== */
+function download(name, text, type){
+  var blob = new Blob([text], { type: type });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+}
+function exportSite(){
+  var all = weeks.map(function(w){ return store.weeks[w.from] || w; });
+  if (!all.length) { toast('Спочатку внеси хоч один тиждень'); return; }
+  var data = JSON.stringify({ weeks: all, layout: store.layout || null }).replace(/</g, '\\u003c').replace(/\$/g, '$$$$');
+  var html = PRISTINE.replace(/(<script id="seedData" type="application\/json">)[\s\S]*?(<\/script>)/, '$1' + data + '$2');
+  html = html.replace(/<body[^>]*>/, '<body>');
+  download('index.html', '<!DOCTYPE html>\n' + html, 'text/html;charset=utf-8');
+  toast('📄 Файл готовий (' + all.length + ' тиж.) — заміни ним index.html на GitHub');
+}
+$('publishBtn').onclick = exportSite;
+$('publishBtn2').onclick = exportSite;
+
+/* ================== ВХІД В АДМІНКУ ================== */
+function tryUnlock(){
+  if (location.hash.toLowerCase().indexOf('admin') === -1) return false;
+  try { if (sessionStorage.getItem(SESSION) === '1') return true; } catch (e) {}
+  var p = prompt('Код доступу до адмінки:');
+  if (p === null) return false;
+  if (p.trim() === ADMIN_PIN) { try { sessionStorage.setItem(SESSION, '1'); } catch (e) {} return true; }
+  alert('Код неправильний');
+  return false;
+}
 
 /* ================== ЗАПУСК ================== */
-var weeksLoaded = false;
-async function onAuth(u){
-  canWrite = !!u;
-  document.body.classList.toggle('unlocked', canWrite);
-  $('loginBtn').hidden = canWrite; $('logoutBtn').hidden = !canWrite;
-  if (!canWrite) {
-    var act = document.querySelector('.tab.active');
-    if (act && (act.dataset.tab === 'adm' || act.dataset.tab === 'dat')) switchTab('tm');
-    renderAll(); return;
-  }
-  try { var ld = await db.doc(COLL_PREFIX + '/layout').get(); if (ld.exists) layout = JSON.parse(JSON.stringify(ld.data())); } catch (e) {}
-  renderAll();
-  if (weeksLoaded && !formReady) { resetForm(); formReady = true; }
-  if (location.hash === '#admin') switchTab('adm');
-}
 (function boot(){
-  if (typeof firebase === 'undefined' || FIREBASE_CONFIG.apiKey.indexOf('ВСТАВ') === 0) {
-    status(typeof firebase === 'undefined' ? 'Не завантажилась бібліотека Firebase. Перевір інтернет і онови сторінку.' : 'Дашборд ще не підключений до Firebase: впиши конфіг на початку скрипта (FIREBASE_CONFIG).');
-    $('loginBtn').hidden = true; renderAll(); return;
-  }
-  firebase.initializeApp(FIREBASE_CONFIG);
-  db = firebase.firestore();
-  db.settings({ ignoreUndefinedProperties: true });
+  canWrite = tryUnlock();
+  loadStore(canWrite);
+  db = localDb();
+  if (canWrite) document.body.classList.add('unlocked');
+  if (store.layout) layout = copy(store.layout);
   db.collection(COLL).onSnapshot(function(snap){
-    weeks = snap.docs.map(function(d){ var x = JSON.parse(JSON.stringify(d.data())); x.from = x.from || d.id; return x; })
+    weeks = snap.docs.map(function(d){ var x = copy(d.data()); x.from = x.from || d.id; return x; })
       .filter(function(w){ return w.tm && w.fc; })
       .sort(function(a,b){ return a.from.localeCompare(b.from); });
     if (!selFrom || !weeks.some(function(w){ return w.from === selFrom; })) selFrom = weeks.length ? weeks[weeks.length - 1].from : null;
-    weeksLoaded = true;
-    status('');
     renderAll();
     if (canWrite && (!formReady || pendingReset)) { resetForm(); formReady = true; pendingReset = false; }
-  }, function(){
-    status('Не вдалось завантажити дані. Перевір інтернет і онови сторінку.');
   });
-  firebase.auth().onAuthStateChanged(onAuth);
-  if (location.hash === '#admin' && !firebase.auth().currentUser) setTimeout(function(){ if (!canWrite) openLogin(); }, 800);
 })();
 </script>
 </body>
