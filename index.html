@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="uk">
-<head>
+<html lang="uk"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Статистика Тракмаркет і Фінкар</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <!-- ===== ДАНІ. Сюди записуються тижні, коли ти завантажуєш файл для публікації. Руками чіпати не треба ===== -->
-<script id="seedData" type="application/json">{"weeks": [{"adsByType": [], "banner": [{"name": "Залишити резюме", "v": 125}, {"name": "Сайт з YouTube-відео", "v": 29}, {"name": "Рішення для бізнесу", "v": 15}, {"name": "Відео YouTube", "v": 7}], "fc": {"active": 159, "bot": 2536, "called": 1878, "channel": 496, "newUsers": 105, "one": 51, "oneLabel": "", "two": 59, "twoLabel": "", "viber": 2120}, "from": "2026-08-01", "links": [{"name": "Сайт", "v": 2055}, {"name": "Резюме водія", "v": 351}, {"name": "Масла EUROLUB", "v": 256}, {"name": "YouTube", "v": 244}, {"name": "Instagram", "v": 97}, {"name": "Курс LABA", "v": 13}, {"name": "Facebook", "v": 6}], "revenue": [], "savedAt": "2026-10-06T07:30:00.000Z", "tm": {"active": 939, "group": 4316, "newAds": 9, "newUsers": 9, "newVisitors": 756, "payments": 5800, "resumes": 123}, "to": "2026-08-07"}]}</script>
+<script id="seedData" type="application/json">{"weeks":[{"from":"2026-10-19","to":"2026-10-25","tm":{"newUsers":13,"newAds":18,"payments":5000,"active":735,"newVisitors":624,"group":4143,"resumes":135},"links":[{"name":"Сайт","v":2500},{"name":"Резюме водія","v":463},{"name":"Масла EUROLUB","v":269},{"name":"YouTube","v":279},{"name":"Instagram","v":143},{"name":"Facebook","v":74}],"banner":[{"name":"Залишити резюме","v":92},{"name":"Сайт з YouTube-відео","v":38},{"name":"Рішення для бізнесу","v":30},{"name":"Відео YouTube","v":-9}],"revenue":[],"adsByType":[{"name":"Вакансії","v":16},{"name":"Техніка","v":2}],"fc":{"active":453,"newUsers":387,"bot":2611,"channel":492,"viber":2038,"leadsFb":39,"leadsTt":0},"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":[{"name":"Ліди з сайту","v":4}]}],"savedAt":"2026-10-26T11:15:51.963Z"}],"layout":{"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":["Ліди з сайту"]}]}}</script>
 <style>
   /* Layout: кольоровий фон-підкладка, білі робочі картки, зверху вибір тижня; аналітика завжди відносно попередніх тижнів */
   :root{
@@ -212,14 +211,14 @@
       <h1>📊 Статистика проектів</h1>
       <p class="period" id="periodLine">Тракмаркет &amp; Фінкар</p>
     </div>
-    <div class="weekpick" id="weekPickWrap" hidden>
+    <div class="weekpick" id="weekPickWrap" hidden="">
       <label for="weekSel">Показати тиждень</label>
       <select id="weekSel"></select>
     </div>
   </div>
 
-  <div class="status" id="statusLine" hidden></div>
-  <div class="status pubbar" id="pubBar" hidden>
+  <div class="status" id="statusLine" hidden=""></div>
+  <div class="status pubbar" id="pubBar" hidden="">
     <span>📌 Є зміни, яких ще немає на сайті. Завантаж файл для публікації і заміни ним index.html на GitHub.</span>
     <button class="btn primary sm" id="publishBtn2">📄 Файл для публікації</button>
   </div>
@@ -424,7 +423,7 @@
       <div class="actions">
         <button class="btn primary" id="importBtn">📥 Вибрати файл</button>
         <button class="btn ghost" id="backupBtn">🗄️ Зберегти резервну копію (JSON)</button>
-        <input type="file" id="importFile" accept=".json,.html,.htm" hidden>
+        <input type="file" id="importFile" accept=".json,.html,.htm" hidden="">
       </div>
     </div>
   </div>
@@ -433,7 +432,7 @@
 </div>
 
 <div class="toast" id="toast" role="status"></div>
-<div class="modal" id="modal" hidden>
+<div class="modal" id="modal" hidden="">
   <div class="mbox" role="dialog" aria-modal="true">
     <p id="mText"></p>
     <div class="actions">
@@ -1529,6 +1528,4 @@ function tryUnlock(){
     if (canWrite && (!formReady || pendingReset)) { resetForm(); formReady = true; pendingReset = false; }
   });
 })();
-</script>
-</body>
-</html>
+</script></body></html>
