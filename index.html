@@ -2,13 +2,16 @@
 <html lang="uk"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Статистика Тракмаркет і Фінкар</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <!-- ===== ДАНІ. Сюди записуються тижні, коли ти завантажуєш файл для публікації. Руками чіпати не треба ===== -->
-<script id="seedData" type="application/json">{"weeks":[{"from":"2026-10-19","to":"2026-10-25","tm":{"newUsers":13,"newAds":18,"payments":5000,"active":735,"newVisitors":624,"group":4143,"resumes":135},"links":[{"name":"Сайт","v":2500},{"name":"Резюме водія","v":463},{"name":"Масла EUROLUB","v":269},{"name":"YouTube","v":279},{"name":"Instagram","v":143},{"name":"Facebook","v":74}],"banner":[{"name":"Залишити резюме","v":92},{"name":"Сайт з YouTube-відео","v":38},{"name":"Рішення для бізнесу","v":30},{"name":"Відео YouTube","v":-9}],"revenue":[],"adsByType":[{"name":"Вакансії","v":16},{"name":"Техніка","v":2}],"fc":{"active":453,"newUsers":387,"bot":2611,"channel":492,"viber":2038,"leadsFb":39,"leadsTt":0},"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":[{"name":"Ліди з сайту","v":4}]}],"savedAt":"2026-10-26T11:15:51.963Z"}],"layout":{"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":["Ліди з сайту"]}]}}</script>
+<script id="seedData" type="application/json">{"weeks":[{"from":"2026-10-19","to":"2026-10-25","tm":{"newUsers":13,"newAds":18,"payments":5000,"active":735,"newVisitors":624,"group":4143,"resumes":135},"links":[{"name":"Сайт","v":2500},{"name":"Резюме водія","v":463},{"name":"Масла EUROLUB","v":269},{"name":"YouTube","v":279},{"name":"Instagram","v":143},{"name":"Facebook","v":74}],"banner":[{"name":"Залишити резюме","v":71},{"name":"Рішення для бізнесу","v":27},{"name":"Відео YouTube","v":10},{"name":"Створити оголошення","v":36}],"revenue":[],"adsByType":[{"name":"Вакансії","v":16},{"name":"Техніка","v":2}],"fc":{"active":453,"newUsers":387,"bot":2611,"channel":492,"viber":2038,"leadsFb":39,"leadsTt":0},"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":[{"name":"Ліди з сайту","v":4}]}],"savedAt":"2026-11-02T10:05:36.346Z"},{"from":"2026-10-26","to":"2026-11-01","tm":{"newUsers":8,"newAds":8,"payments":15250,"active":701,"newVisitors":575,"group":4132,"resumes":135},"links":[{"name":"Сайт","v":2529},{"name":"Резюме водія","v":471},{"name":"Масла EUROLUB","v":270},{"name":"YouTube","v":279},{"name":"Instagram","v":126},{"name":"Facebook","v":74}],"banner":[{"name":"Залишити резюме","v":79},{"name":"Рішення для бізнесу","v":31},{"name":"Відео YouTube","v":16},{"name":"Створити оголошення","v":47}],"revenue":[],"adsByType":[{"name":"Техніка","v":2},{"name":"Вакансія","v":6}],"fc":{"active":413,"newUsers":353,"bot":2617,"channel":489,"viber":2037,"leadsFb":30,"leadsTt":0},"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":[{"name":"Ліди з сайту","v":2}]}],"savedAt":"2026-11-02T10:00:51.338Z"}],"layout":{"blocks":[{"id":"fc_leads","proj":"fc","title":"Ліди з реклами","items":["Ліди з сайту"]}]}}</script>
 <style>
   /* Layout: кольоровий фон-підкладка, білі робочі картки, зверху вибір тижня; аналітика завжди відносно попередніх тижнів */
   :root{
@@ -528,16 +531,16 @@ var M = {
   tmAds:   { t:'Нові оголошення', get:function(w){ return w.tm.newAds; } },
   tmRes:   { t:'Резюме водіїв', get:function(w){ return w.tm.resumes; } },
   tmGroup: { t:'Користувачів у групі', get:function(w){ return w.tm.group; } },
-  tmLinks: { t:'Переходи з Лінктрі', get:function(w){ return sum(w.links); } },
-  tmBan:   { t:'Переходи з банера', get:function(w){ return sum(w.banner); } },
+  tmLinks: { t:'Лінктрі, переходів за весь час', get:function(w){ return sum(w.links); } },
+  tmBan:   { t:'Банер, переходів за весь час', get:function(w){ return sum(w.banner); } },
   /* Ліди з реклами: у тижнях до запуску реклами полів немає — тоді null, і такі тижні не беруть участі в порівнянні */
   fcLeads:  { t:'Ліди з реклами, разом', get:function(w){ return hasLeads(w) ? (w.fc.leadsFb || 0) + (w.fc.leadsTt || 0) : null; } },
   fcLeadsFb:{ t:'Ліди з Facebook', get:function(w){ return hasLeads(w) ? (w.fc.leadsFb || 0) : null; } },
-  fcLeadsTt:{ t:'Ліди з TikTok', get:function(w){ return hasLeads(w) ? (w.fc.leadsTt || 0) : null; } },
+  fcLeadsTt:{ t:'Ліди з TikTok', get:function(w){ return (ttOn() && hasLeads(w)) ? (w.fc.leadsTt || 0) : null; } },
   fcSpend:  { t:'Витрати на рекламу', u:'₴', lowerBetter:true, get:function(w){ var s = spend(w); return s ? s : null; } },
   fcCpl:    { t:'Ціна ліда', u:'₴', lowerBetter:true, get:function(w){ return cpl(w.fc.spendFb, w.fc.spendTt, w.fc.leadsFb, w.fc.leadsTt); } },
   fcCplFb:  { t:'Ціна ліда Facebook', u:'₴', lowerBetter:true, get:function(w){ return cpl(w.fc.spendFb, 0, w.fc.leadsFb, 0); } },
-  fcCplTt:  { t:'Ціна ліда TikTok', u:'₴', lowerBetter:true, get:function(w){ return cpl(0, w.fc.spendTt, 0, w.fc.leadsTt); } },
+  fcCplTt:  { t:'Ціна ліда TikTok', u:'₴', lowerBetter:true, get:function(w){ return ttOn() ? cpl(0, w.fc.spendTt, 0, w.fc.leadsTt) : null; } },
   /* Воронка продажу: null, якщо за тиждень не вносилась */
   fcContacted: { t:'Зв’язались з лідом', get:function(w){ return fv(w, 'contacted'); } },
   fcInterested:{ t:'Зацікавлені клієнти', get:function(w){ return fv(w, 'interested'); } },
@@ -596,6 +599,8 @@ function goodDir(key, d){ return M[key].lowerBetter ? -d : d; }
 var STAGES = [['contacted','Зв’язались'],['interested','Зацікавлені'],['approved','Фінансування підібрано'],['matched','Техніку підібрано']];
 function hasFunnel(w){ return !!(w.fc && STAGES.some(function(st){ return w.fc[st[0]] !== undefined && w.fc[st[0]] !== null; })); }
 function fv(w, k){ return hasFunnel(w) ? (+w.fc[k] || 0) : null; }
+/* TikTok показується лише тоді, коли хоч раз внесено ліди чи витрати з TikTok більше нуля */
+function ttOn(){ return weeks.some(function(x){ return x.fc && ((+x.fc.leadsTt || 0) > 0 || (+x.fc.spendTt || 0) > 0); }); }
 function hasLeads(w){ return w.fc && (w.fc.leadsFb !== undefined && w.fc.leadsFb !== null || w.fc.leadsTt !== undefined && w.fc.leadsTt !== null); }
 function spend(w){ return (+w.fc.spendFb || 0) + (+w.fc.spendTt || 0); }
 function cpl(sFb, sTt, lFb, lTt){ var s = (+sFb || 0) + (+sTt || 0), l = (+lFb || 0) + (+lTt || 0); return (s > 0 && l > 0) ? s / l : null; }
@@ -753,7 +758,7 @@ function renderTM(){
   html += '<div class="card"><h2>🔻 Воронка тижня</h2><p class="sub">Від відвідувача до оголошення</p><div class="chart-wrap short"><canvas id="cFunnel"></canvas></div></div>';
 
   if (weeks.length > 1) {
-    html += '<div class="sec"><h2>📈 Динаміка по тижнях</h2><p>Обраний тиждень виділено на графіках · тижнів у базі: ' + weeks.length + '</p></div>' +
+    html += '<div class="sec"><h2>📈 Динаміка по тижнях</h2><p>Останній тиждень виділено на графіках</p></div>' +
       '<div class="charts-2">' +
       '<div class="card"><h2>Користувачі сайту</h2><p class="sub">Активні та нові</p><div class="chart-wrap"><canvas id="cUsers"></canvas></div></div>' +
       '<div class="card"><h2>Дохід по тижнях</h2><p class="sub">Всього за ' + weeks.length + ' тижнів: ' + fmt(weeks.reduce(function(s,x){ return s + (x.tm.payments||0); }, 0)) + '₴ · у середньому ' + fmt(weeks.reduce(function(s,x){ return s + (x.tm.payments||0); }, 0) / weeks.length) + '₴ на тиждень</p><div class="chart-wrap"><canvas id="cMoney"></canvas></div></div>' +
@@ -764,24 +769,19 @@ function renderTM(){
   }
 
   html += '<div class="charts-2">' +
-    '<div class="card"><h2>🔗 Лінктрі</h2><p class="sub">' + fmt(linksTotal) + ' переходів за тиждень</p><div class="chart-wrap"><canvas id="cLinks"></canvas></div></div>' +
-    '<div class="card"><h2>🎯 Банер сайту та YouTube</h2><p class="sub">' + fmt(bannerTotal) + ' переходів за тиждень</p><div class="chart-wrap"><canvas id="cBanner"></canvas></div></div>' +
+    '<div class="card"><h2>🔗 Лінктрі</h2><p class="sub">' + fmt(linksTotal) + ' переходів за весь час' + (p ? ' · за тиждень ' + growthTxt(linksTotal - sum(p.links)) : '') + '</p><div class="chart-wrap"><canvas id="cLinks"></canvas></div></div>' +
+    '<div class="card"><h2>🎯 Банер сайту та YouTube</h2><p class="sub">' + fmt(bannerTotal) + ' переходів за весь час' + (p ? ' · за тиждень ' + growthTxt(bannerTotal - sum(p.banner)) : '') + '</p><div class="chart-wrap"><canvas id="cBanner"></canvas></div></div>' +
     '</div>';
 
-  html += '<div class="card"><h2>📋 Деталізація Лінктрі</h2><p class="sub">Частка кожного каналу і зміна до минулих тижнів</p><div class="tscroll"><table><thead><tr><th>Канал</th><th class="num">Переходи</th><th class="num">Частка</th>' +
-          (p ? '<th class="num">Тиждень тому</th><th class="num">Зміна</th><th class="num">Середнє 4 тиж.</th>' : '') + '</tr></thead><tbody>';
+  html += '<div class="card"><h2>📋 Деталізація Лінктрі</h2><p class="sub">Лінктрі рахує переходи накопичувально за весь час. «За тиждень» — скільки додалось з минулого звіту</p><div class="tscroll"><table><thead><tr><th>Канал</th><th class="num">Переходи за весь час</th><th class="num">Частка</th>' +
+          (p ? '<th class="num">Тиждень тому</th><th class="num">За тиждень</th>' : '') + '</tr></thead><tbody>';
   (w.links || []).slice().sort(function(a,b){ return b.v - a.v; }).forEach(function(x){
-    var hist = weeks.slice(Math.max(0, i-4), i).map(function(pw){ var f = (pw.links || []).filter(function(y){ return y.name === x.name; })[0]; return f ? f.v : null; }).filter(function(v){ return v !== null; });
     var prev = p && (p.links || []).filter(function(y){ return y.name === x.name; })[0];
-    var avg = hist.length ? hist.reduce(function(a,b){ return a+b; }, 0) / hist.length : null;
-    var d = prev && prev.v ? (x.v - prev.v) / prev.v * 100 : null;
     html += '<tr><td><b>' + esc(x.name) + '</b></td><td class="num">' + fmt(x.v) + '</td><td class="num">' + pct(x.v, linksTotal).toFixed(1) + '%</td>' +
-            (p ? '<td class="num">' + (prev ? fmt(prev.v) : '—') + '</td><td class="num">' +
-              (d === null ? '—' : '<span class="' + (d > 0 ? 'up' : (d < 0 ? 'down' : 'neutral')) + '">' + (d > 0 ? '+' : '') + d.toFixed(1) + '%</span>') +
-              '</td><td class="num">' + (avg === null ? '—' : fmt(avg)) + '</td>' : '') + '</tr>';
+            (p ? '<td class="num">' + (prev ? fmt(prev.v) : '—') + '</td><td class="num">' + (prev ? growth(x.v, prev.v) : '—') + '</td>' : '') + '</tr>';
   });
   html += '<tr class="total"><td>Разом</td><td class="num">' + fmt(linksTotal) + '</td><td class="num">100%</td>' +
-          (p ? '<td class="num">' + fmt(sum(p.links)) + '</td><td class="num">' + changeHtml('tmLinks', linksTotal, sum(p.links)) + '</td><td></td>' : '') + '</tr></tbody></table></div></div>';
+          (p ? '<td class="num">' + fmt(sum(p.links)) + '</td><td class="num">' + growth(linksTotal, sum(p.links)) + '</td>' : '') + '</tr></tbody></table></div></div>';
 
   html += customBlocks('tm', i);
   html += '<div class="card"><h2>💡 Ключові інсайти — Тракмаркет</h2>' + insightsTM(i, linksTotal, conv, rev, adsT) + '</div>';
@@ -816,12 +816,12 @@ function insightsTM(i, linksTotal, conv, rev, adsT){
   out += money + '.</div>';
   var sorted = (w.links || []).slice().sort(function(a,b){ return b.v - a.v; });
   if (sorted.length) {
-    out += '<div class="insight win"><b>🔗 ГОЛОВНИЙ КАНАЛ:</b> ' + esc(sorted[0].name) + ' — ' + fmt(sorted[0].v) + ' переходів, ' + pct(sorted[0].v, linksTotal).toFixed(0) + '% усього трафіку Лінктрі.</div>';
+    out += '<div class="insight win"><b>🔗 ГОЛОВНИЙ КАНАЛ:</b> ' + esc(sorted[0].name) + ' — ' + fmt(sorted[0].v) + ' переходів за весь час, ' + pct(sorted[0].v, linksTotal).toFixed(0) + '% усього трафіку Лінктрі.</div>';
     var weak = sorted.filter(function(x){ return pct(x.v, linksTotal) < 1; });
     if (weak.length) out += '<div class="insight risk"><b>⚠️ КАНАЛИ, ЩО НЕ ПРАЦЮЮТЬ:</b> ' + weak.map(function(x){ return esc(x.name) + ' (' + x.v + ')'; }).join(', ') + '. Разом менше 1% трафіку — або перезапускати, або прибирати.</div>';
   }
   var b = (w.banner || []).slice().sort(function(a,b){ return b.v - a.v; });
-  if (b.length) out += '<div class="insight warn"><b>🎯 БАНЕР:</b> найбільше тиснуть «' + esc(b[0].name) + '» — ' + fmt(b[0].v) + ', найменше «' + esc(b[b.length-1].name) + '» — ' + fmt(b[b.length-1].v) + '.</div>';
+  if (b.length) out += '<div class="insight warn"><b>🎯 БАНЕР (за весь час):</b> найбільше тиснуть «' + esc(b[0].name) + '» — ' + fmt(b[0].v) + ', найменше «' + esc(b[b.length-1].name) + '» — ' + fmt(b[b.length-1].v) + '.</div>';
   return out;
 }
 
@@ -901,7 +901,8 @@ function renderFC(){
   var html = '';
 
   if (hasLeads(w)) html += leadsSection(i);
-  html += extraCard('fc_leads', i) + extraCard('fc_spend', i);
+  if (!hasLeads(w)) html += extraCard('fc_leads', i);
+  html += extraCard('fc_spend', i);
   if (hasFunnel(w)) html += funnelSection(i);
   html += extraCard('fc_funnel', i);
   if (!hasLeads(w))
@@ -925,11 +926,11 @@ function renderFC(){
 
   if (weeks.length > 1) {
     var anyLeads = weeks.some(hasLeads), anyCpl = weeks.some(function(x){ return val('fcCpl', x) !== null; });
-    html += '<div class="sec"><h2>📈 Динаміка по тижнях</h2><p>Обраний тиждень виділено на графіках · тижнів у базі: ' + weeks.length + '</p></div>' +
+    html += '<div class="sec"><h2>📈 Динаміка по тижнях</h2><p>Останній тиждень виділено на графіках</p></div>' +
       '<div class="charts-2">' +
       '<div class="card"><h2>Користувачі сайту</h2><p class="sub">Активні та нові</p><div class="chart-wrap"><canvas id="cFcUsers"></canvas></div></div>' +
       (anyLeads
-        ? '<div class="card"><h2>Ліди з реклами</h2><p class="sub">Facebook і TikTok по тижнях</p><div class="chart-wrap"><canvas id="cFcLeads"></canvas></div></div>'
+        ? '<div class="card"><h2>Ліди з реклами</h2><p class="sub">' + (ttOn() ? 'Facebook і TikTok' : 'Facebook') + ' по тижнях</p><div class="chart-wrap"><canvas id="cFcLeads"></canvas></div></div>'
         : '') +
       '</div>' +
       (weeks.some(hasFunnel) ? '<div class="card"><h2>Воронка по тижнях</h2><p class="sub">Скільки людей дійшло до кожного кроку</p><div class="chart-wrap"><canvas id="cFcFunnelTrend"></canvas></div></div>' : '') +
@@ -947,9 +948,19 @@ function renderFC(){
   drawFC(i);
 }
 
+/* Свої показники блоку — маленькими картками всередині основного блоку */
+function xMinis(id, i){
+  var b = weekBlock(weeks[i], id);
+  if (!b) return '';
+  return b.items.map(function(it, k){
+    var key = xKey(id, it.name), st = stats(key, i);
+    return mini(pal()[(k + 1) % 7], esc(it.name), show(key, st.cur), st.prev !== null ? changeHtml(key, st.cur, st.prev, ' до минулого') + ' · минулий: ' + show(key, st.prev) : 'новий показник');
+  }).join('');
+}
 function leadsSection(i){
   var w = weeks[i], f = w.fc;
-  var fb = +f.leadsFb || 0, tt = +f.leadsTt || 0, total = fb + tt;
+  var TT = ttOn();
+  var fb = +f.leadsFb || 0, tt = TT ? (+f.leadsTt || 0) : 0, total = fb + tt;
   var ls = stats('fcLeads', i);
   var sp = spend(w), cAll = val('fcCpl', w), cFb = val('fcCplFb', w), cTt = val('fcCplTt', w);
   var cs = stats('fcCpl', i);
@@ -959,21 +970,22 @@ function leadsSection(i){
     return (s.prev !== null ? changeHtml(key, s.cur, s.prev, ' до минулого') : 'перший тиждень реклами') +
            (c !== null ? '<br>лід по ' + fmt(c) + '₴' : '') + ' · ' + pct(n, total).toFixed(0) + '% лідів';
   };
-  var h = '<div class="sec"><h2>🎯 Ліди з реклами</h2><p>Заявки з Facebook і TikTok за тиждень</p></div>';
+  var h = '<div class="sec"><h2>🎯 Ліди з реклами</h2><p>Заявки з ' + (TT ? 'Facebook і TikTok' : 'Facebook') + ' за тиждень</p></div>';
   h += '<div class="card"><div class="big-row"><div class="big-num">' +
     '<div class="bn">' + fmt(total) + badgeHtml('fcLeads', ls) + '</div>' +
     '<div class="bl">лідів за тиждень</div>' +
-    '<div class="explain">З Facebook — <b>' + fmt(fb) + '</b>, з TikTok — <b>' + fmt(tt) + '</b>.' +
+    '<div class="explain">' + (TT ? 'З Facebook — <b>' + fmt(fb) + '</b>, з TikTok — <b>' + fmt(tt) + '</b>.' : 'Усі з Facebook.') +
       (ls.prev !== null ? ' Тижнем раніше було <b>' + fmt(ls.prev) + '</b> (' + changeHtml('fcLeads', total, ls.prev) + ').' : '') +
       (ls.avgN >= 2 ? ' У середньому за попередні ' + ls.avgN + ' тижні — <b>' + fmt(ls.avg) + '</b>.' : '') +
       (sp ? ' Витрачено <b>' + fmt(sp) + '₴</b>' + (cAll !== null ? ', один лід коштував <b>' + fmt(cAll) + '₴</b>' + (cs.prev !== null ? ' (' + changeHtml('fcCpl', cAll, cs.prev) + ' до минулого тижня)' : '') : '') + '.'
           : ' Щоб бачити ціну ліда, впиши витрати на рекламу в адмінці.') +
-    '</div></div><div class="big-chart"><canvas id="cLeads"></canvas></div></div>' +
+    '</div></div>' + (TT ? '<div class="big-chart"><canvas id="cLeads"></canvas></div>' : '') + '</div>' +
     '<div class="minis">' +
       mini(tok('c5'), '📘 Facebook', fmt(fb), srcNote('fcLeadsFb', fb, cFb)) +
-      mini(tok('c7'), '🎵 TikTok', fmt(tt), srcNote('fcLeadsTt', tt, cTt)) +
+      (TT ? mini(tok('c7'), '🎵 TikTok', fmt(tt), srcNote('fcLeadsTt', tt, cTt)) : '') +
       (sp ? mini(tok('c3'), '💸 Витрати', fmt(sp) + '₴', (stats('fcSpend', i).prev !== null ? changeHtml('fcSpend', sp, stats('fcSpend', i).prev, ' до минулого') : 'за тиждень')) : '') +
-      (cAll !== null ? mini(tok('c2'), '🏷️ Ціна ліда', fmt(cAll) + '₴', cs.avgN >= 2 ? 'середня за ' + cs.avgN + ' тиж. — ' + fmt(cs.avg) + '₴' : 'загалом по обох платформах') : '') +
+      xMinis('fc_leads', i) +
+      (cAll !== null ? mini(tok('c2'), '🏷️ Ціна ліда', fmt(cAll) + '₴', cs.avgN >= 2 ? 'середня за ' + cs.avgN + ' тиж. — ' + fmt(cs.avg) + '₴' : (TT ? 'загалом по обох платформах' : 'за тиждень')) : '') +
     '</div></div>';
   return h;
 }
@@ -1046,12 +1058,12 @@ function insightsFC(i, subs){
   if (hasFunnel(w)) out += funnelInsights(i);
   out += trendInsights(['fcLeads','fcInterested','fcConvInt','fcMatched','fcCostInt','fcLeadsFb','fcLeadsTt','fcCpl','fcAct','fcNew','fcSubs'], i);
   if (hasLeads(w)) {
-    var fb = +f.leadsFb || 0, tt = +f.leadsTt || 0, tot = fb + tt;
+    var TT = ttOn(), fb = +f.leadsFb || 0, tt = TT ? (+f.leadsTt || 0) : 0, tot = fb + tt;
     var cFb = val('fcCplFb', w), cTt = val('fcCplTt', w);
-    if (tot) {
+    if (tot && TT) {
       var lead = fb >= tt ? ['Facebook', fb, 'TikTok', tt] : ['TikTok', tt, 'Facebook', fb];
       out += '<div class="insight"><b>🎯 ДЖЕРЕЛА ЛІДІВ:</b> ' + lead[0] + ' дає ' + pct(lead[1], tot).toFixed(0) + '% лідів (' + fmt(lead[1]) + ' проти ' + fmt(lead[3]) + ' з ' + lead[2] + ').</div>';
-    } else out += '<div class="insight risk"><b>🎯 ЛІДИ:</b> за тиждень з реклами не прийшло жодного ліда.</div>';
+    } else if (!tot) out += '<div class="insight risk"><b>🎯 ЛІДИ:</b> за тиждень з реклами не прийшло жодного ліда.</div>';
     if (cFb !== null && cTt !== null && cFb !== cTt) {
       var cheap = cFb < cTt ? ['Facebook', cFb, 'TikTok', cTt] : ['TikTok', cTt, 'Facebook', cFb];
       out += '<div class="insight win"><b>🏷️ ДЕШЕВШИЙ ЛІД:</b> на ' + cheap[0] + ' — ' + fmt(cheap[1]) + '₴ проти ' + fmt(cheap[3]) + '₴ на ' + cheap[2] +
@@ -1107,12 +1119,12 @@ function drawFC(i){
       charts.cFcLeads = new Chart($('cFcLeads'), { type:'bar', data:{ labels: weeks.map(label), datasets:[
         { label:'Facebook', data: weeks.map(function(x){ return val('fcLeadsFb', x); }), backgroundColor: hiBars(C[4], i), borderRadius:4 },
         { label:'TikTok', data: weeks.map(function(x){ return val('fcLeadsTt', x); }), backgroundColor: hiBars(C[6], i), borderRadius:4 }
-      ] }, options: so });
+      ].filter(function(d){ return d.label !== 'TikTok' || ttOn(); }) }, options: so });
     }
     if ($('cFcFunnelTrend')) line('cFcFunnelTrend', STAGES.map(function(st, k){ return lineSet(st[1], weeks.map(function(x){ return fv(x, st[0]); }), C[k], i); }), true);
     if ($('cFcCpl')) line('cFcCpl', [ lineSet('Facebook', weeks.map(function(x){ return val('fcCplFb', x); }), C[4], i),
                                        lineSet('TikTok', weeks.map(function(x){ return val('fcCplTt', x); }), C[6], i),
-                                       lineSet('Разом', weeks.map(function(x){ return val('fcCpl', x); }), C[2], i) ], true);
+                                       lineSet('Разом', weeks.map(function(x){ return val('fcCpl', x); }), C[2], i) ].filter(function(d){ return d.label !== 'TikTok' || ttOn(); }), true);
     line('cFcSubs', [ lineSet('Телеграм-бот', weeks.map(function(x){ return x.fc.bot; }), C[0], i),
                       lineSet('Вайбер', weeks.map(function(x){ return x.fc.viber; }), C[4], i),
                       lineSet('Телеграм-канал', weeks.map(function(x){ return x.fc.channel; }), C[2], i) ], true);
@@ -1243,7 +1255,7 @@ function clean(w){
 function cleanFc(fc, n){
   var out = { active:n(fc.active), newUsers:n(fc.newUsers), bot:n(fc.bot), channel:n(fc.channel), viber:n(fc.viber) };
   var has = function(v){ return v !== undefined && v !== null && v !== ''; };
-  if (has(fc.leadsFb) || has(fc.leadsTt)) { out.leadsFb = n(fc.leadsFb); out.leadsTt = n(fc.leadsTt); }
+  if (has(fc.leadsFb) || has(fc.leadsTt)) { out.leadsFb = n(fc.leadsFb); if (has(fc.leadsTt)) out.leadsTt = n(fc.leadsTt); }
   if (has(fc.spendFb)) out.spendFb = n(fc.spendFb);
   if (has(fc.spendTt)) out.spendTt = n(fc.spendTt);
   if (STAGES.some(function(st){ return has(fc[st[0]]); })) STAGES.forEach(function(st){ out[st[0]] = n(fc[st[0]]); });
@@ -1287,7 +1299,6 @@ async function saveWeek(){
     await db.collection(COLL).doc(from).set(w);
     try { await db.doc('settings/layout').set({ blocks: rb.tpl }); layout = { blocks: rb.tpl }; } catch (e) {}
     if (editingFrom && editingFrom !== from) await db.collection(COLL).doc(editingFrom).delete();
-    selFrom = from;
     pendingReset = true;
     toast('✅ Тиждень ' + label(w) + ' збережено');
     switchTab('tm');
@@ -1370,7 +1381,7 @@ function switchTab(id){
 }
 function renderPicker(){
   var sel = $('weekSel');
-  $('weekPickWrap').hidden = weeks.length < 2;
+  $('weekPickWrap').hidden = true; // вибір тижня прибрано — завжди показується останній
   sel.innerHTML = weeks.slice().reverse().map(function(w, k){
     return '<option value="' + w.from + '">' + label(w) + ' ' + w.from.slice(0,4) + (k === 0 ? ' · останній' : '') + '</option>';
   }).join('');
@@ -1383,7 +1394,7 @@ function renderAll(){
   var line = 'Тракмаркет & Фінкар';
   if (weeks.length) {
     var i = selIndex();
-    line = 'Аналітика за ' + label(weeks[i]) + (i === weeks.length - 1 ? '' : ' (архівний тиждень)') + ' · тижнів у базі: ' + weeks.length;
+    line = 'Аналітика за ' + label(weeks[i]);
   }
   $('periodLine').textContent = line;
   $('footerLine').textContent = weeks.length > 1 ? 'Стрілки — зміна до попереднього тижня; «середнє» — середнє за 4 тижні перед обраним' : '';
@@ -1523,7 +1534,8 @@ function tryUnlock(){
     weeks = snap.docs.map(function(d){ var x = copy(d.data()); x.from = x.from || d.id; return x; })
       .filter(function(w){ return w.tm && w.fc; })
       .sort(function(a,b){ return a.from.localeCompare(b.from); });
-    if (!selFrom || !weeks.some(function(w){ return w.from === selFrom; })) selFrom = weeks.length ? weeks[weeks.length - 1].from : null;
+    // завжди показуємо останній (найсвіжіший) тиждень, коли дані завантажились або змінились
+    selFrom = weeks.length ? weeks[weeks.length - 1].from : null;
     renderAll();
     if (canWrite && (!formReady || pendingReset)) { resetForm(); formReady = true; pendingReset = false; }
   });
